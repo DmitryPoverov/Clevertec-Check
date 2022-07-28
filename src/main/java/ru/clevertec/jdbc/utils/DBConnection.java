@@ -10,6 +10,8 @@ public class DBConnection {
     private static final String DB_USER = PropertyManager.getUser();
     private static final String DB_PASSWORD = PropertyManager.getPassword();
 
+    //TODO private constructor
+
     public static Connection getConnection() throws SQLException {
         Connection connection;
         ProxyConnection proxyConnection;
