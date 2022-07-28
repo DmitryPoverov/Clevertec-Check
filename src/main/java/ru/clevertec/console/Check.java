@@ -82,7 +82,7 @@ public class Check {
         }
     }
 
-    private void parseParamsToGoodsAndCard(String[] args) {
+    public void parseParamsToGoodsAndCard(String[] args) {
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {

@@ -23,8 +23,8 @@ public class CheckServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         Map<String, String[]> parameterMap = req.getParameterMap();
-        String[] ids = parameterMap.get("id");
-        Check check = new Check(ids);
+        String[] args = parameterMap.get("id");
+        Check check = new Check(args);
         List<String> stringsToPrint = check.createList();
 
         List<String> dottedStringToPrint = new ArrayList<>();
