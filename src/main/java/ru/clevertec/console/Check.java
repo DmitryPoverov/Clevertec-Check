@@ -49,7 +49,7 @@ public class Check {
             fileWriter.write(stringBuilder.toString());
             setParamMappersList(setParamMapper(params, ";"));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println("!!! " + e.getMessage());
         }
     }
 
@@ -70,15 +70,35 @@ public class Check {
         return sb.toString();
     }
 
+// STREAM API
     public void printToFile(String path) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
             List<String> stringList = createList();
-            for (String s : stringList) {
+
+/* Old version.
+                for (String s : stringList) {
                 writer.write(s);
                 writer.newLine();
-            }
+            }*/
+
+// Stream API.
+            stringList.stream()
+                    .peek(row -> {
+                        try {
+                            writer.write(row);
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    })
+                    .forEach(row -> {
+                        try {
+                            writer.newLine();
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    });
         } catch (IOException e) {
-            System.out.println("!!! You entered a wrong path!!! ");
+            System.out.println("!!! You entered the wrong path !!! ");
         }
     }
 
