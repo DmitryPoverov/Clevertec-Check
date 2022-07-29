@@ -13,17 +13,14 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
     implementation 'javax.servlet:jstl:1.2'
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
-
-    implementation 'org.apache.maven.plugins:maven-compiler-plugin:3.10.1'
-
+    implementation 'org.projectlombok:lombok:1.18.24'
+//    implementation 'org.apache.maven.plugins:maven-compiler-plugin:3.10.1'
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
     compileOnly 'org.projectlombok:lombok:1.18.24'
-
     testImplementation(platform('org.junit:junit-bom:5.8.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
-
 }
 
 group = 'ru.clevertec'
@@ -35,13 +32,22 @@ application {
     mainClass = 'ru.clevertec.console.CheckRunner'
 }
 
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    jvmArgs '--enable-preview'
+}
+
 compileJava.options.encoding = 'UTF-8'
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-/*//This task copies the 1.txt-file from /testTask to testTask/tempCopy
+//This task copies the 1.txt-file from /testTask to testTask/tempCopy
 task copyFiles(type: Copy) {
     from 'testTask'
     into 'testTask/tempCopy'
@@ -54,7 +60,7 @@ task downloadFiles(type: FileDownloader) {
     sourceUrl = 'https://github.com/DmitryPoverov/Clevertec-Check/blob/master/testTask/2.txt?raw=true'
     outputFile = new File('testTask/tempDownload/2.txt')
 }
-//This is a body of the downloadFiles task
+//This code is a body of the downloadFiles task
 class FileDownloader extends DefaultTask {
     @Input
     String sourceUrl
@@ -70,16 +76,6 @@ class FileDownloader extends DefaultTask {
             println e
         }
     }
-}*/
-
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-test {
-    useJUnitPlatform()
 }
 
 

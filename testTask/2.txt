@@ -2,19 +2,19 @@
             CASH RECEIPT
             Supermarket
 
-                  2022-05-20 18:05:19
+                  2022-05-29 18:28:31
 --------------------------------------
 QTY DESCRIPTION         PRICE   TOTAL
- 3  Boots2              25.00   75.00
- 2  West2               45.00   72.00
- 1  West1               45.00   45.00
- 6  Hat2                40.00  192.00
- 5  Jacket2             35.00  140.00
- 4  Shoes2              30.00   96.00
+ 1  Boots2              25,00   25,00
+ 3  West2               45,00  108,00
+ 4  West1               45,00  180,00
+ 2  Hat2                40,00   64,00
+ 3  Jacket2             35,00   84,00
+ 8  Shoes2              30,00  192,00
 --------------------------------------
 Discount card No:123
-Discount card discount          93.00
-SALE discount                  125.00
-Total discount                 218.00
-TOTAL                          527.00
+Discount card discount          97,95
+SALE discount                  112,00
+Total discount                 209,95
+TOTAL                          555,05
 --------------------------------------
