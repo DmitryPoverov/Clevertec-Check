@@ -13,6 +13,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
     implementation 'javax.servlet:jstl:1.2'
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.0'
     implementation 'org.projectlombok:lombok:1.18.24'
 //    implementation 'org.apache.maven.plugins:maven-compiler-plugin:3.10.1'
     testImplementation 'junit:junit:4.13.2'
@@ -22,6 +23,9 @@ dependencies {
 
     testImplementation(platform('org.junit:junit-bom:5.8.2'))
     testImplementation('org.junit.jupiter:junit-jupiter')
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 group = 'ru.clevertec'
