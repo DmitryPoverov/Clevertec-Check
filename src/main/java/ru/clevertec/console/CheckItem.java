@@ -59,8 +59,8 @@ public class CheckItem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParamMapper that = (ParamMapper) o;
-        return id == that.id && Double.compare(that.price, price) == 0 && quantity == that.quantity && Objects.equals(name, that.name);
+        CheckItem checkItem = (CheckItem) o;
+        return id == checkItem.id && Double.compare(checkItem.price, price) == 0 && quantity == checkItem.quantity && Objects.equals(name, checkItem.name);
     }
 
     @Override

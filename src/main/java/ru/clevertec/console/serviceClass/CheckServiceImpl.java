@@ -3,7 +3,7 @@ package ru.clevertec.console.serviceClass;
 import ru.clevertec.console.Cards;
 import ru.clevertec.console.Check;
 import ru.clevertec.console.CheckItem;
-import ru.clevertec.console.Goods;
+import ru.clevertec.console.Products;
 import ru.clevertec.exception.WrongIdException;
 
 import java.io.*;
@@ -89,7 +89,7 @@ public class CheckServiceImpl implements CheckService {
             quantity = pM.getQuantity();
 
             try {
-                if (Goods.isDiscount(id)) {
+                if (Products.isDiscount(id)) {
                     discountProductsCounter += quantity;
                 }
             } catch (WrongIdException e) {
@@ -110,13 +110,13 @@ public class CheckServiceImpl implements CheckService {
             id = pM.getId();
 
             try {
-                description = Goods.getDescriptionById(pM.getId());
-                price = Goods.getPriceById(pM.getId());
+                description = Products.getDescriptionById(pM.getId());
+                price = Products.getPriceById(pM.getId());
                 quantity = pM.getQuantity();
                 if (discountProductsCounter > 5) {
                     fiveProductDiscount = 0.2;
                 }
-                if (Goods.isDiscount(id)) {
+                if (Products.isDiscount(id)) {
                     double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
                     fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
                     total = price * quantity - fiveProductsCurrentDiscount;
