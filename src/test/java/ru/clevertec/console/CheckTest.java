@@ -6,6 +6,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.Assert;
+import org.junit.Test;
+import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.serviceClass.CheckServiceImpl;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -33,6 +37,8 @@ public class CheckTest {
     private static final String expectedContent = "28;Apple;1.12;2\r\n30;Watermelon;2.45;4\r\n8;Orange;0.99;5\r\n19;" +
             "Pear;0.85;1\r\n26;Cherry;3.18;6\r\n39;Strawberry;5.20;8\r\n35;Nectarine;3.17;9\r\n110;Apple;1.12;2\r\n" +
             "28;MyApple;1.12;2\r\n28;Apple;2.001;2\r\n28;Apple;1.12;50";
+    CheckService checkService = CheckServiceImpl.getInstance();
+
     private static final String EXPECTED = """
             --------------------------------------
                         CASH RECEIPT
@@ -58,9 +64,9 @@ public class CheckTest {
     @Test
     public void testGetDescriptionByIdShouldReturnId() throws IOException {
         //given
-        Check check = new Check("testTask/1.txt");
+        Check check = new Check(checkService, "testTask/1.txt");
         //when
-        List<String> stringList = check.printToStringList();
+        List<String> stringList = check.getCheckService().printToStringList(check);
         StringBuilder actual = new StringBuilder();
         for (int i=0; i<stringList.size(); i++) {
             if (i==4) {

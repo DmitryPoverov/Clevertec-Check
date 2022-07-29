@@ -3,6 +3,10 @@ out
 target
 .gitignore
 *.MF
+*.txt
+*.json
+*.pdf
+*.docx
 
 # Compiled class file
 *.class

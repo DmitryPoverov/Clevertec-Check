@@ -1,7 +1,8 @@
 package ru.clevertec.servlet;
 
 import ru.clevertec.console.Check;
-import lombok.SneakyThrows;
+import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.serviceClass.CheckServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,14 +19,15 @@ import java.util.Map;
 @WebServlet("/check")
 public class CheckServlet extends HttpServlet {
 
-    @SneakyThrows
+    CheckService checkService = CheckServiceImpl.getInstance();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         Map<String, String[]> parameterMap = req.getParameterMap();
         String[] ids = parameterMap.get("id");
-        Check check = new Check(ids);
-        List<String> stringsToPrint = check.createList();
+        Check check = new Check(checkService, ids);
+        List<String> stringsToPrint = check.getCheckService().createList(check);
 
         List<String> dottedStringToPrint = new ArrayList<>();
         for (String s : stringsToPrint) {
@@ -74,8 +76,8 @@ public class CheckServlet extends HttpServlet {
             }
         }
 
-        Check check = new Check(newArgs);
-        List<String> stringList = check.createList();
+        Check check = new Check(checkService, newArgs);
+        List<String> stringList = check.getCheckService().createList(check);
 
         resp.setContentType("text/html");
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());

@@ -2,22 +2,22 @@ package ru.clevertec.console;
 
 import java.util.Objects;
 
-public class ParamMapper {
+public class CheckItem {
 
     private int id;
     private String name;
     private double price;
     private int quantity;
 
-    public ParamMapper() {
+    public CheckItem() {
     }
 
-    public ParamMapper(int id, int quantity) {
+    public CheckItem(int id, int quantity) {
         this.id = id;
         this.quantity = quantity;
     }
 
-    public ParamMapper(int id, String name, double price, int quantity) {
+    public CheckItem(int id, String name, double price, int quantity) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -52,12 +52,7 @@ public class ParamMapper {
 
     @Override
     public String toString() {
-        return "ParamMapper{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", price=" + price +
-                ", quantity=" + quantity +
-                '}';
+        return "{" + id + ", " + name + ", " + price + "$, " + quantity + '}';
     }
 
     @Override

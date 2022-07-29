@@ -4,6 +4,8 @@ package ru.clevertec.console;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.exception.WrongIdException;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class ProductsTest {
 
@@ -11,7 +13,7 @@ public class ProductsTest {
     private static final int WRONG_ID = 100;
 
     @Test
-    void testPrintToConsoleShouldReturnId() {
+    public void testPrintToConsoleShouldReturnId() {
         //given
         String expected = "Dress2";
         //when
@@ -47,9 +49,16 @@ public class ProductsTest {
     void testIsDiscountShouldReturnTrue() {
         Assertions.assertTrue(Products.isDiscount(CORRECT_ID));
     }
-
     @Test
     void testIsDiscountShouldReturnFalse() {
         Assertions.assertTrue(Products.isDiscount(CORRECT_ID));
+    }
+
+    @Test(expected = WrongIdException.class)
+    public void testGetPriceByIdShouldThrowsException() {
+        //given
+        //when
+        Products.getPriceById(WRONG_ID);
+        //then
     }
 }
