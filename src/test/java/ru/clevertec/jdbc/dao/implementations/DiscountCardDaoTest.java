@@ -1,7 +1,6 @@
 package ru.clevertec.jdbc.dao.implementations;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.jdbc.dao.daoInterface.Dao;
 import ru.clevertec.jdbc.entities.DiscountCard;
@@ -18,27 +17,27 @@ public class DiscountCardDaoTest {
             new DiscountCard(2, 121),
             new DiscountCard(3, 122),
             new DiscountCard(4, 123),
-            new DiscountCard(6, 777),
-            new DiscountCard(7, 333),
-            new DiscountCard(9, 444));
+            new DiscountCard(5, 777));
     private static final DiscountCard CORRECT_CARD = new DiscountCard(2, 121);
     private static final DiscountCard INCORRECT_CARD = new DiscountCard();
     private static final int CORRECT_ID = 2;
     private static final int INCORRECT_ID = 10;
-    private static final int LINE_TO_CHANGE = 5;
+    private static final int ROW_TO_CHANGE = 5;
+    private static final int ROW_TO_DELETE = 200;
     private static final Dao<Integer, DiscountCard> DAO = DiscountCardDao.getInstance();
     private static final DiscountCard DISCOUNT_CARD = new DiscountCard(444);
 
     @Test
-    @Disabled
-    void testShouldAddNewEntityAndReturnIt() throws SQLException {
+    void testShouldAddNewEntityAndReturnItAndThenDeleteIt() throws SQLException {
         DiscountCard actual = DAO.save(DISCOUNT_CARD);
-        Assertions.assertEquals(DISCOUNT_CARD.getNumber(), actual.getNumber());
+        Assertions.assertEquals(DISCOUNT_CARD, actual);
+        boolean deleteById = DAO.deleteById(actual.getId());
+        Assertions.assertTrue(deleteById);
     }
 
     @Test
     void testShouldUpdateLine() throws SQLException {
-        boolean update = DAO.update(new DiscountCard(6, 777));
+        boolean update = DAO.update(new DiscountCard(ROW_TO_CHANGE, 777));
         Assertions.assertTrue(update);
     }
 
@@ -50,7 +49,7 @@ public class DiscountCardDaoTest {
 
     @Test
     void testShouldNotDeleteOneRow() throws SQLException {
-        boolean deleteById = DAO.deleteById(LINE_TO_CHANGE);
+        boolean deleteById = DAO.deleteById(ROW_TO_DELETE);
         Assertions.assertFalse(deleteById);
     }
 

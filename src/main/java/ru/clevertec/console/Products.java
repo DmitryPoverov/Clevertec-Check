@@ -4,7 +4,7 @@ import ru.clevertec.exception.WrongIdException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public enum Goods {
+public enum Products {
 
     DRESS1(1, "Dress1", 10.01, 0),
     PANTS1(2, "Pants1", 10.01, 1),
@@ -28,7 +28,7 @@ public enum Goods {
     private final double price;
     private final int discount;
 
-    Goods(int id, String description, double price, int discount) {
+    Products(int id, String description, double price, int discount) {
         this.id = id;
         this.description = description;
         this.price = price;
@@ -50,7 +50,7 @@ public enum Goods {
 
     public static String getDescriptionById(int id) {
         String description = "";
-        for (Goods p : Goods.values()) {
+        for (Products p : Products.values()) {
             if (p.getId() == id) {
                 description = p.getDescription();
             }
@@ -64,14 +64,14 @@ public enum Goods {
 
     public static boolean isDiscount(int id) {
         boolean discount = false;
-        for (Goods p : Goods.values()) {
+        for (Products p : Products.values()) {
             if (p.getId() == id) {
                 if (p.getDiscount() != 0) {
                     discount = true;
                 }
             }
         }
-        if (Goods.getDescriptionById(id).equals("")) {
+        if (Products.getDescriptionById(id).equals("")) {
             LOGGER.error("A WRONG ID=" + id);
             throw new WrongIdException("isDiscount: An ID=" + id + " is WRONG");
         }
@@ -80,7 +80,7 @@ public enum Goods {
 
     public static double getPriceById(int id) {
         double price = 0;
-        for (Goods p : Goods.values()) {
+        for (Products p : Products.values()) {
             if (p.getId() == id) {
                 price = p.getPrice();
             }

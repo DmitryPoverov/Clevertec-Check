@@ -27,7 +27,7 @@ public class CheckServlet extends HttpServlet {
         Map<String, String[]> parameterMap = req.getParameterMap();
         String[] args = parameterMap.get("id");
         Check check = new Check(checkService, args);
-        List<String> stringsToPrint = check.getCheckService().createList();
+        List<String> stringsToPrint = check.getCheckService().createList(check);
 
         List<String> dottedStringToPrint = new ArrayList<>();
         for (String s : stringsToPrint) {
