@@ -1,0 +1,133 @@
+plugins {
+    id 'java'
+    id 'application'
+    id("war")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+    implementation 'javax.servlet:jstl:1.2'
+    implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.0'
+    implementation 'org.projectlombok:lombok:1.18.24'
+//    implementation 'org.apache.maven.plugins:maven-compiler-plugin:3.10.1'
+    testImplementation 'junit:junit:4.13.2'
+    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
+    implementation 'com.google.code.gson:gson:2.9.0'
+
+    testImplementation(platform('org.junit:junit-bom:5.8.2'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+group = 'ru.clevertec'
+version = '1.0-SNAPSHOT'
+description = 'ClevertecCheck'
+java.sourceCompatibility = JavaVersion.VERSION_15
+
+application {
+    mainClass = 'ru.clevertec.console.CheckRunner'
+}
+
+/*
+test {
+    useJUnitPlatform()
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    jvmArgs '--enable-preview'
+}
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}*/
+
+/*//This task copies the 1.txt-file from /testTask to testTask/tempCopy
+task copyFiles(type: Copy) {
+    from 'testTask'
+    into 'testTask/tempCopy'
+    include '1.txt'
+}
+
+
+//This task downloads 2.txt-file from gitHub.com to a local folder /testTask/tempDownload
+task downloadFiles(type: FileDownloader) {
+    sourceUrl = 'https://github.com/DmitryPoverov/Clevertec-Check/blob/master/testTask/2.txt?raw=true'
+    outputFile = new File('testTask/tempDownload/2.txt')
+}
+//This is a body of the downloadFiles task
+class FileDownloader extends DefaultTask {
+    @Input
+    String sourceUrl
+
+    @OutputFile
+    File outputFile
+
+    @TaskAction
+    void download() {
+        try {
+            ant.get(src: sourceUrl, dest: outputFile)
+        } catch (Exception e) {
+            println e
+        }
+    }
+}*/
+
+
+//// 1st training task
+//task hello {
+//    println("Task1")
+//    println("Task1 add")
+//}
+//hello.doFirst {
+//    println("Task1 doFirst")
+//}
+//hello.doLast {
+//    println("Task1 doLast")
+//}
+//
+//
+//// The 2nd training task which one depends on the 1st task
+//task bye(dependsOn:hello) {
+//}
+//bye {
+//    println("Task2")
+//    println("Task2 add")
+//}
+
+
+////Here's a custom plugin
+////Extension
+//class WeatherExtension {
+//    String forecast = 'My default value'
+//}
+//
+//class WeatherForecastPlugin implements Plugin<Project>{
+//
+//    @Override
+//    void apply(Project project) {
+//
+//        def extension = project.extensions.create('weather', WeatherExtension)
+//
+//        project.task('weatherTomorrow'){
+//            group = 'Weather'
+//            doLast{
+//                println 'Tomorrow it will be' + extension.forecast
+//            }
+//        }
+//    }
+//}
+//
+//apply plugin: WeatherForecastPlugin
+//
+//weather.forecast = ' snow and hail and -10 degree centigrade.'
