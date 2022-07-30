@@ -5,16 +5,16 @@ import java.util.Objects;
 public class DiscountCard {
 
     private int id;
-    private int number;
+    private String number;
 
     public DiscountCard() {
     }
 
-    public DiscountCard(int number) {
+    public DiscountCard(String number) {
         this.number = number;
     }
 
-    public DiscountCard(int id, int number) {
+    public DiscountCard(int id, String number) {
         this.id = id;
         this.number = number;
     }
@@ -22,14 +22,14 @@ public class DiscountCard {
     public int getId() {
         return id;
     }
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
     public void setId(int id) {
         this.id = id;
     }
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 
@@ -43,7 +43,7 @@ public class DiscountCard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DiscountCard that = (DiscountCard) o;
-        return id == that.id && number == that.number;
+        return id == that.id && Objects.equals(number, that.number);
     }
 
     @Override

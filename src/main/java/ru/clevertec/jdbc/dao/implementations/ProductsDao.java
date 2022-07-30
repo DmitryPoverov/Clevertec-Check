@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public class ProductsDao implements Dao<Integer, Product> {
 
-    private static final ProductsDao INSTANCE = new ProductsDao();
+    private static final Dao<Integer, Product> INSTANCE = new ProductsDao();
     private static final String FIND_ALL = """
             SELECT id, title, price, discount
             FROM check_products
@@ -79,6 +79,30 @@ public class ProductsDao implements Dao<Integer, Product> {
     }
 
     @Override
+    public String getNameById(Integer id) throws SQLException {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            Product product = new Product();
+            handleResultSet(product, resultSet);
+            return product.getTitle();
+        }
+    }
+
+    @Override
+    public boolean isDiscountById(Integer id) throws SQLException {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            Product product = new Product();
+            handleResultSet(product, resultSet);
+            return product.isDiscount();
+        }
+    }
+
+    @Override
     public Optional<Product> findByName(String name) throws SQLException {
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME)) {
@@ -88,6 +112,11 @@ public class ProductsDao implements Dao<Integer, Product> {
             handleResultSet(product, resultSet);
             return Optional.of(product);
         }
+    }
+
+    @Override
+    public boolean isSuchCard(String name) {
+        throw new UnsupportedOperationException();
     }
 
     private void handleResultSet(Product product, ResultSet resultSet) throws SQLException {

@@ -12,6 +12,12 @@ public interface Dao<K,T> {
 
     Optional<T> findByName(String name) throws SQLException;
 
+    boolean isSuchCard(String name) throws SQLException;
+
+    String getNameById(Integer id) throws SQLException;
+
+    boolean isDiscountById(Integer id) throws SQLException;
+
     boolean deleteById(K id) throws SQLException;
 
     boolean update(T entity) throws SQLException;
