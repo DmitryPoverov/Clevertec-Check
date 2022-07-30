@@ -2,7 +2,6 @@ package ru.clevertec.console.serviceClass;
 
 import ru.clevertec.console.Check;
 import ru.clevertec.console.CheckItem;
-import ru.clevertec.console.Products;
 import ru.clevertec.exception.WrongIdException;
 import ru.clevertec.jdbc.dao.daoInterface.Dao;
 import ru.clevertec.jdbc.dao.implementations.DiscountCardDao;
@@ -102,11 +101,13 @@ public class CheckServiceImpl implements CheckService {
             quantity = pM.getQuantity();
 
             try {
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     discountProductsCounter += quantity;
                 }
             } catch (WrongIdException e) {
                 System.out.println("!!! It seems like id=" + id + " is wrong !!!");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
@@ -124,12 +125,12 @@ public class CheckServiceImpl implements CheckService {
 
             try {
                 description = DAO.getNameById(pM.getId());
-                price = Products.getPriceById(pM.getId());
+                price = DAO.getPriceById(pM.getId());
                 quantity = pM.getQuantity();
                 if (discountProductsCounter > 5) {
                     fiveProductDiscount = 0.2;
                 }
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
                     fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
                     total = price * quantity - fiveProductsCurrentDiscount;

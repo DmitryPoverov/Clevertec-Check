@@ -41,8 +41,7 @@ public class ProductsDao implements Dao<Integer, Product> {
             where id = ?
             """;
 
-    private ProductsDao() {
-    }
+    private ProductsDao() {}
 
     public static Dao<Integer, Product> getInstance() {
         return INSTANCE;
@@ -87,6 +86,18 @@ public class ProductsDao implements Dao<Integer, Product> {
             Product product = new Product();
             handleResultSet(product, resultSet);
             return product.getTitle();
+        }
+    }
+
+    @Override
+    public double getPriceById(Integer id) throws SQLException {
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            Product product = new Product();
+            handleResultSet(product, resultSet);
+            return product.getPrice();
         }
     }
 

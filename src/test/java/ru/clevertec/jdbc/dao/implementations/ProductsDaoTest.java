@@ -13,32 +13,38 @@ import java.util.Optional;
 public class ProductsDaoTest {
 
     private static final List<Product> EXPECTED_LIST = Arrays.asList(
-            new Product( 1,"Dress1",10.11,false),
-            new Product(2,"Pants1",10.22,false),
-            new Product(3,"Boots1",25.33,true),
-            new Product(4,"Shoes1",30.44,true),
-            new Product(5,"Jacket1",35.55,true),
-            new Product(6,"Hat1",140.66,true),
-            new Product(7,"Hat2",40.77,true),
-            new Product(8,"West1",45.88,false),
-            new Product(9,"West2",45.99,true),
-            new Product(10,"Dress2",15.00,true),
-            new Product(11,"Pants2",20.11,true),
-            new Product(12,"Boots2",25.22,false),
-            new Product(13,"Shoes2",30.33,true),
-            new Product(14,"Jacket2",35.44,true)
-    );
+            new Product( 1,"Dress1_db",10.11,false),
+            new Product(2,"Pants1_db",10.22,false),
+            new Product(3,"Boots1_db",25.33,true),
+            new Product(4,"Shoes1_db",30.44,true),
+            new Product(5,"Jacket1_db",35.55,true),
+            new Product(6,"Hat1_db",140.66,true),
+            new Product(7,"Hat2_db",40.77,true),
+            new Product(8,"West1_db",45.88,false),
+            new Product(9,"West2_db",45.99,true),
+            new Product(10,"Dress2_db",15.00,true),
+            new Product(11,"Pants2_db",20.11,true),
+            new Product(12,"Boots2_db",25.22,false),
+            new Product(13,"Shoes2_db",30.33,true),
+            new Product(14,"Jacket2_db",35.44,true));
     private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
     private static final int CORRECT_ID = 1;
-    private static final Product EXPECTED_PRODUCT = new Product( 1,"Dress1",10.11,false);
+    private static final Product EXPECTED_PRODUCT = new Product( 1,"Dress1_db",10.11,false);
     private static final int INCORRECT_ID = 111;
     private static final Product EXPECTED_INCORRECT_PRODUCT = new Product();
     private static final Product EXPECTED_SAVED_PRODUCT = new Product("TEST",11.99,true);
-    private static final Product EXPECTED_UPDATED_PRODUCT = new Product(2,"Pants1",10.22,false);
+    private static final Product EXPECTED_UPDATED_PRODUCT = new Product(2,"Pants1_db",10.22,false);
     private static final int UPDATED_ID = 2;
     private static final int TRUE_ID = 3;
     private static final int ID_TO_DELETE = 31;
-    private static final String CORRECT_ID_NAME = "Dress1";
+    private static final double EXPECTED_PRICE_BY_ID = 10.11;
+    private static final String CORRECT_ID_NAME = "Dress1_db";
+
+    @Test
+    void testShouldReturnPriceById() throws SQLException {
+        double priceById = DAO.getPriceById(CORRECT_ID);
+        Assertions.assertEquals(EXPECTED_PRICE_BY_ID, priceById);
+    }
 
     @Test
     void testShouldReturnProductByName() throws SQLException {
