@@ -1,12 +1,16 @@
 package ru.clevertec.console.serviceClass;
 
-import ru.clevertec.console.Cards;
 import ru.clevertec.console.Check;
 import ru.clevertec.console.CheckItem;
-import ru.clevertec.console.Products;
 import ru.clevertec.exception.WrongIdException;
+import ru.clevertec.jdbc.dao.daoInterface.Dao;
+import ru.clevertec.jdbc.dao.implementations.DiscountCardDao;
+import ru.clevertec.jdbc.dao.implementations.ProductsDao;
+import ru.clevertec.jdbc.entities.DiscountCard;
+import ru.clevertec.jdbc.entities.Product;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,6 +20,7 @@ import java.util.stream.Collectors;
 public class CheckServiceImpl implements CheckService {
 
     private static CheckService instance;
+    private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
 
     private CheckServiceImpl() {
     }
@@ -29,17 +34,24 @@ public class CheckServiceImpl implements CheckService {
     }
 
     public void parseParamsToGoodsAndCard(String[] args, Check check) {
+        Dao<Integer, DiscountCard> dao = DiscountCardDao.getInstance();
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
-            String temp1 = arg.replace(",", "");
-            char[] c = temp1.toCharArray();
+            String temp = arg.replace(",", "");
+            char[] c = temp.toCharArray();
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
-                tempList.add(temp1);
-            } else if ((c[0] != 0) && ((c[0] == 'c') && Cards.isSuchCard(temp1))) {
-                tempCard = arg.replace("card-", "");
+                tempList.add(temp);
             } else {
-                System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                try {
+                    if ((c[0] != 0) && ((c[0] == 'c') && dao.isSuchCard(temp))) {
+                        tempCard = arg.replace("card-", "");
+                    } else {
+                        System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         check.setDiscountCard(tempCard);
@@ -89,11 +101,13 @@ public class CheckServiceImpl implements CheckService {
             quantity = pM.getQuantity();
 
             try {
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     discountProductsCounter += quantity;
                 }
             } catch (WrongIdException e) {
                 System.out.println("!!! It seems like id=" + id + " is wrong !!!");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
@@ -110,13 +124,13 @@ public class CheckServiceImpl implements CheckService {
             id = pM.getId();
 
             try {
-                description = Products.getDescriptionById(pM.getId());
-                price = Products.getPriceById(pM.getId());
+                description = DAO.getNameById(pM.getId());
+                price = DAO.getPriceById(pM.getId());
                 quantity = pM.getQuantity();
                 if (discountProductsCounter > 5) {
                     fiveProductDiscount = 0.2;
                 }
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
                     fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
                     total = price * quantity - fiveProductsCurrentDiscount;
@@ -127,6 +141,8 @@ public class CheckServiceImpl implements CheckService {
 
                 stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
             } catch (WrongIdException ignored) {
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
         }
         totalDiscount = totalPrice * discountCardDiscount;

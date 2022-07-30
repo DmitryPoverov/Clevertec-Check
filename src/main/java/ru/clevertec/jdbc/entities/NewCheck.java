@@ -6,6 +6,7 @@ import java.util.List;
 public class NewCheck /*extends Check */{
 
     private static final NewCheck INSTANCE = new NewCheck();
+
     private List<Product> productList = new ArrayList<>();
     private DiscountCard discountCard = new DiscountCard();
 

@@ -13,19 +13,19 @@ import java.util.Optional;
 public class DiscountCardDaoTest {
 
     private static final List<DiscountCard> CORRECT_LIST = Arrays.asList(
-            new DiscountCard(1, 120),
-            new DiscountCard(2, 121),
-            new DiscountCard(3, 122),
-            new DiscountCard(4, 123),
-            new DiscountCard(5, 777));
-    private static final DiscountCard CORRECT_CARD = new DiscountCard(2, 121);
+            new DiscountCard(1, "card-120"),
+            new DiscountCard(2, "card-121"),
+            new DiscountCard(3, "card-122"),
+            new DiscountCard(4, "card-123"),
+            new DiscountCard(5, "card-777"));
+    private static final DiscountCard CORRECT_CARD = new DiscountCard(2, "card-121");
     private static final DiscountCard INCORRECT_CARD = new DiscountCard();
     private static final int CORRECT_ID = 2;
     private static final int INCORRECT_ID = 10;
     private static final int ROW_TO_CHANGE = 5;
     private static final int ROW_TO_DELETE = 200;
     private static final Dao<Integer, DiscountCard> DAO = DiscountCardDao.getInstance();
-    private static final DiscountCard DISCOUNT_CARD = new DiscountCard(444);
+    private static final DiscountCard DISCOUNT_CARD = new DiscountCard("card-444");
 
     @Test
     void testShouldAddNewEntityAndReturnItAndThenDeleteIt() throws SQLException {
@@ -37,7 +37,7 @@ public class DiscountCardDaoTest {
 
     @Test
     void testShouldUpdateLine() throws SQLException {
-        boolean update = DAO.update(new DiscountCard(ROW_TO_CHANGE, 777));
+        boolean update = DAO.update(new DiscountCard(ROW_TO_CHANGE, "card-777"));
         Assertions.assertTrue(update);
     }
 
