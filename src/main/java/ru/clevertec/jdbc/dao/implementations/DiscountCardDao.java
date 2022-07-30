@@ -20,7 +20,6 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
     public static Dao<Integer, DiscountCard> getInstance() {
         return INSTANCE;
     }
-
     private static final String FIND_ALL = """
             SELECT *
             FROM check_discount_card

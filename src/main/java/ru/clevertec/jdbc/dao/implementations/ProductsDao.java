@@ -41,8 +41,7 @@ public class ProductsDao implements Dao<Integer, Product> {
             where id = ?
             """;
 
-    private ProductsDao() {
-    }
+    private ProductsDao() {}
 
     public static Dao<Integer, Product> getInstance() {
         return INSTANCE;

@@ -7,8 +7,7 @@ public class DiscountCard {
     private int id;
     private String number;
 
-    public DiscountCard() {
-    }
+    public DiscountCard() {}
 
     public DiscountCard(String number) {
         this.number = number;

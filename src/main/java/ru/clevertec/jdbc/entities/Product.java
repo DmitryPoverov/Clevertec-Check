@@ -9,8 +9,7 @@ public class Product {
     private double price;
     private boolean discount;
 
-    public Product() {
-    }
+    public Product() {}
 
     public Product(String title, double price, boolean discount) {
         this.title = title;
