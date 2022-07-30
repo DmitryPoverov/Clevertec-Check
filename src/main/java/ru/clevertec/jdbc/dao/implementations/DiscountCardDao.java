@@ -60,7 +60,7 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
             while (resultSet.next()) {
                 cardList.add(new DiscountCard(
                         resultSet.getInt("id"),
-                        resultSet.getInt("number"))
+                        resultSet.getString("number"))
                 );
             }
             return cardList;
@@ -82,7 +82,7 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
     @Override
     public Optional<DiscountCard> findByName(String name) throws SQLException {
         try (Connection connection = new ProxyConnection(DBConnection.getConnection());
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
             preparedStatement.setString(1, name);
             ResultSet resultSet = preparedStatement.executeQuery();
             DiscountCard discountCard = new DiscountCard();
@@ -91,10 +91,32 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
         }
     }
 
+    @Override
+    public boolean isSuchCard(String name) throws SQLException {
+        try (Connection connection = new ProxyConnection(DBConnection.getConnection());
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            DiscountCard discountCard = new DiscountCard();
+            handleResultSet(resultSet, discountCard);
+            return discountCard.getId()!=0;
+        }
+    }
+
+    @Override
+    public String getNameById(Integer id) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isDiscountById(Integer id) {
+        throw new UnsupportedOperationException();
+    }
+
     private void handleResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
         if (resultSet.next()) {
             discountCard.setId(resultSet.getInt("id"));
-            discountCard.setNumber(resultSet.getInt("number"));
+            discountCard.setNumber(resultSet.getString("number"));
         }
     }
 
@@ -112,7 +134,7 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
     public boolean update(DiscountCard entity) throws SQLException {
         try (ProxyConnection connection = new ProxyConnection(DBConnection.getConnection());
              PreparedStatement statement = connection.prepareStatement(UPDATE_ENTITY)) {
-            statement.setInt(1, entity.getNumber());
+            statement.setString(1, entity.getNumber());
             statement.setInt(2, entity.getId());
             int result = statement.executeUpdate();
             return result==1;
@@ -123,7 +145,7 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
     public DiscountCard save(DiscountCard entity) throws SQLException {
         try (ProxyConnection connection = new ProxyConnection(DBConnection.getConnection());
              PreparedStatement statement = connection.prepareStatement(SAVE_NEW_ENTITY, Statement.RETURN_GENERATED_KEYS)){
-            statement.setInt(1, entity.getNumber());
+            statement.setString(1, entity.getNumber());
             statement.executeUpdate();
             ResultSet keys = statement.getGeneratedKeys();
             keys.next();
