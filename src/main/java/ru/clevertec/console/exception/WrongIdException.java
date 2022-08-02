@@ -1,4 +1,4 @@
-package ru.clevertec.exception;
+package ru.clevertec.console.exception;
 
 public class WrongIdException extends RuntimeException {
 

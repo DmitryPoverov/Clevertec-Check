@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.utils;
+package ru.clevertec.console.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +17,7 @@ public class PropertyManager {
         loadProperties();
     }
 
-    private PropertyManager() {
-    }
+    private PropertyManager() {}
 
     private static void loadProperties() {
         try(InputStream inputStream =

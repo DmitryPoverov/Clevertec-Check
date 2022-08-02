@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.entities;
+package ru.clevertec.console.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 public class NewCheck /*extends Check */{
 
     private static final NewCheck INSTANCE = new NewCheck();
+
     private List<Product> productList = new ArrayList<>();
     private DiscountCard discountCard = new DiscountCard();
 

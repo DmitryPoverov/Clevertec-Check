@@ -1,21 +1,28 @@
 package ru.clevertec.console.serviceClass;
 
-import ru.clevertec.console.Cards;
-import ru.clevertec.console.Check;
-import ru.clevertec.console.CheckItem;
-import ru.clevertec.console.Products;
-import ru.clevertec.exception.WrongIdException;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
+import ru.clevertec.console.check.Check;
+import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.dao.implementations.DiscountCardDao;
+import ru.clevertec.console.dao.implementations.ProductsDao;
+import ru.clevertec.console.dto.CheckItem;
+import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.exception.WrongIdException;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckServiceImpl implements CheckService {
 
     private static CheckService instance;
+    private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
+    private static final String FILE_PATH = "C:/Users/PD/IdeaProjects/Clevertec Check/src/main/webapp/resources/pdf_check.pdf";
 
     private CheckServiceImpl() {
     }
@@ -28,18 +35,70 @@ public class CheckServiceImpl implements CheckService {
         return temporalInstance;
     }
 
+    public String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
+        List<String> postMethodArgs = new ArrayList<>();
+        while (parameterNames.hasMoreElements()) {
+            StringBuilder builder = new StringBuilder();
+            String s = parameterNames.nextElement();
+            if (s.contains("id")) {
+                String[] id = parameterMap.get(s);
+                builder.append(id[0]).append("-");
+                if (parameterNames.hasMoreElements()) {
+                    s = parameterNames.nextElement();
+                    if (s.contains("quantity")) {
+                        String[] quantity = parameterMap.get(s);
+                        for (String s2 : quantity) {
+                            builder.append(s2);
+                        }
+                    }
+                }
+            } else if (s.contains("discount")) {
+                String[] discount = parameterMap.get(s);
+                builder.append("card-").append(discount[0]);
+            }
+            postMethodArgs.add(builder.toString());
+        }
+        return postMethodArgs.toArray(new String[0]);
+    }
+
+    public void printToPDF(List<String> list) {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(FILE_PATH));
+            Font font = new Font();
+            Rectangle a5 = PageSize.A5;
+            font.setFamily("Courier");
+            document.setPageSize(a5);
+            document.open();
+            for (String s : list) {
+                document.add(new Paragraph(s, font));
+            }
+        } catch (DocumentException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            document.close();
+        }
+    }
+
     public void parseParamsToGoodsAndCard(String[] args, Check check) {
+        Dao<Integer, DiscountCard> dao = DiscountCardDao.getInstance();
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
-            String temp1 = arg.replace(",", "");
-            char[] c = temp1.toCharArray();
+            String temp = arg.replace(",", "");
+            char[] c = temp.toCharArray();
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
-                tempList.add(temp1);
-            } else if ((c[0] != 0) && ((c[0] == 'c') && Cards.isSuchCard(temp1))) {
-                tempCard = arg.replace("card-", "");
+                tempList.add(temp);
             } else {
-                System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                try {
+                    if ((c[0] != 0) && ((c[0] == 'c') && dao.isSuchCard(temp))) {
+                        tempCard = arg.replace("card-", "");
+                    } else {
+                        System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         check.setDiscountCard(tempCard);
@@ -89,11 +148,13 @@ public class CheckServiceImpl implements CheckService {
             quantity = pM.getQuantity();
 
             try {
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     discountProductsCounter += quantity;
                 }
             } catch (WrongIdException e) {
                 System.out.println("!!! It seems like id=" + id + " is wrong !!!");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
@@ -110,13 +171,13 @@ public class CheckServiceImpl implements CheckService {
             id = pM.getId();
 
             try {
-                description = Products.getDescriptionById(pM.getId());
-                price = Products.getPriceById(pM.getId());
+                description = DAO.getNameById(pM.getId());
+                price = DAO.getPriceById(pM.getId());
                 quantity = pM.getQuantity();
                 if (discountProductsCounter > 5) {
                     fiveProductDiscount = 0.2;
                 }
-                if (Products.isDiscount(id)) {
+                if (DAO.isDiscountById(id)) {
                     double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
                     fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
                     total = price * quantity - fiveProductsCurrentDiscount;
@@ -127,6 +188,8 @@ public class CheckServiceImpl implements CheckService {
 
                 stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
             } catch (WrongIdException ignored) {
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
         }
         totalDiscount = totalPrice * discountCardDiscount;

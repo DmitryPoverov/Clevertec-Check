@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.entities;
+package ru.clevertec.console.entities;
 
 import java.util.Objects;
 
@@ -9,8 +9,7 @@ public class Product {
     private double price;
     private boolean discount;
 
-    public Product() {
-    }
+    public Product() {}
 
     public Product(String title, double price, boolean discount) {
         this.title = title;

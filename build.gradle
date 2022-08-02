@@ -15,7 +15,6 @@ dependencies {
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.4.0'
     implementation 'com.google.code.gson:gson:2.9.0'
-//    implementation 'org.apache.maven.plugins:maven-compiler-plugin:3.10.1'
     testImplementation 'junit:junit:4.13.2'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
@@ -24,6 +23,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0-RC1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0-RC1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'com.itextpdf:itext7-core:7.2.2'
+    implementation 'com.itextpdf:itextpdf:5.5.13.3'
+    implementation group: 'com.itextpdf', name: 'itextpdf', version: '5.5.13.3'
+    implementation 'com.itextpdf:kernel:7.2.3'
+    implementation 'com.itextpdf:layout:7.2.3'
+    implementation 'com.itextpdf:io:7.2.3'
 }
 
 test {

@@ -1,4 +1,4 @@
-package ru.clevertec.console;
+package ru.clevertec.console.enums;
 
 public enum Cards {
     CARD1("card-120"),
@@ -6,7 +6,7 @@ public enum Cards {
     CARD3("card-122"),
     CARD4("card-123");
 
-    private String number;
+    private final String number;
 
     Cards(String number) {
         this.number = number;

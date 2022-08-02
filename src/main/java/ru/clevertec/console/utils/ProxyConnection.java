@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.utils;
+package ru.clevertec.console.utils;
 
 import java.sql.*;
 import java.util.Map;
@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 public class ProxyConnection implements Connection {
-
     private final Connection connection;
 
     public ProxyConnection(Connection connection) {

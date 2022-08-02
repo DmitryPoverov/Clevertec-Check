@@ -1,6 +1,6 @@
-package ru.clevertec.console;
+package ru.clevertec.console.enums;
 
-import ru.clevertec.exception.WrongIdException;
+import ru.clevertec.console.exception.WrongIdException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
