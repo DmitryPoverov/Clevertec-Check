@@ -1,4 +1,4 @@
-package ru.clevertec.console;
+package ru.clevertec.console.dto;
 
 import java.util.Objects;
 

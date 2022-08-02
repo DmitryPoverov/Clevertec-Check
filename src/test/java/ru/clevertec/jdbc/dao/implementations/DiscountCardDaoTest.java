@@ -2,8 +2,9 @@ package ru.clevertec.jdbc.dao.implementations;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.jdbc.dao.daoInterface.Dao;
-import ru.clevertec.jdbc.entities.DiscountCard;
+import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.dao.implementations.DiscountCardDao;
+import ru.clevertec.console.entities.DiscountCard;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -12,13 +13,18 @@ import java.util.Optional;
 
 public class DiscountCardDaoTest {
 
-    private static final List<DiscountCard> CORRECT_LIST = Arrays.asList(
+    private static final List<DiscountCard> EXPECTED_FULL_LIST = Arrays.asList(
             new DiscountCard(1, "card-120"),
             new DiscountCard(2, "card-121"),
             new DiscountCard(3, "card-122"),
             new DiscountCard(4, "card-123"),
             new DiscountCard(5, "card-777"));
-    private static final DiscountCard CORRECT_CARD = new DiscountCard(2, "card-121");
+    private static final List<DiscountCard> EXPECTED_LIST_2_ELEMENTS = Arrays.asList(
+            new DiscountCard(1, "card-120"),
+            new DiscountCard(2, "card-121"));
+    private static final int ZERO = 0;
+    private static final int PAGE_NUMBER_FOR_FULL_LIST = 1;
+    private static final DiscountCard EXPECTED_CARD = new DiscountCard(2, "card-121");
     private static final DiscountCard INCORRECT_CARD = new DiscountCard();
     private static final int CORRECT_ID = 2;
     private static final int INCORRECT_ID = 10;
@@ -41,10 +47,18 @@ public class DiscountCardDaoTest {
         Assertions.assertTrue(update);
     }
 
+    //The test checks: when only 3 elements are returning (limit 2, offset 1 - are default values)
     @Test
-    void testShouldReturnArrayListOfDiscountCard() throws SQLException {
-        List<DiscountCard> actual = DAO.findAll();
-        Assertions.assertEquals(CORRECT_LIST, actual);
+    void testShouldReturn2ElementsArrayListOfDiscountCard() throws SQLException {
+        List<DiscountCard> actual = DAO.findAll(ZERO, ZERO);
+        Assertions.assertEquals(EXPECTED_LIST_2_ELEMENTS, actual);
+    }
+
+    //The test checks: when all elements are returning
+    @Test
+    void testShouldReturnAllElementsArrayListOfDiscountCard() throws SQLException {
+        List<DiscountCard> actual = DAO.findAll(DAO.countAllRows(), PAGE_NUMBER_FOR_FULL_LIST);
+        Assertions.assertEquals(EXPECTED_FULL_LIST, actual);
     }
 
     @Test
@@ -58,7 +72,7 @@ public class DiscountCardDaoTest {
         Optional<DiscountCard> byId = DAO.findById(CORRECT_ID);
         if (byId.isPresent()) {
             DiscountCard actual = byId.get();
-            Assertions.assertEquals(CORRECT_CARD, actual);
+            Assertions.assertEquals(EXPECTED_CARD, actual);
         }
     }
 

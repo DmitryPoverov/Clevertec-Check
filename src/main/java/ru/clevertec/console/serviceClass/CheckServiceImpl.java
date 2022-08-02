@@ -1,26 +1,28 @@
 package ru.clevertec.console.serviceClass;
 
-import ru.clevertec.console.Check;
-import ru.clevertec.console.CheckItem;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
+import ru.clevertec.console.check.Check;
+import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.dao.implementations.DiscountCardDao;
+import ru.clevertec.console.dao.implementations.ProductsDao;
+import ru.clevertec.console.dto.CheckItem;
+import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.entities.Product;
 import ru.clevertec.exception.WrongIdException;
-import ru.clevertec.jdbc.dao.daoInterface.Dao;
-import ru.clevertec.jdbc.dao.implementations.DiscountCardDao;
-import ru.clevertec.jdbc.dao.implementations.ProductsDao;
-import ru.clevertec.jdbc.entities.DiscountCard;
-import ru.clevertec.jdbc.entities.Product;
 
 import java.io.*;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckServiceImpl implements CheckService {
 
     private static CheckService instance;
     private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
+    private static final String FILE_PATH = "C:/Users/PD/IdeaProjects/Clevertec Check/src/main/webapp/resources/pdf_check.pdf";
 
     private CheckServiceImpl() {
     }
@@ -31,6 +33,51 @@ public class CheckServiceImpl implements CheckService {
             instance = temporalInstance = new CheckServiceImpl();
         }
         return temporalInstance;
+    }
+
+    public String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
+        List<String> postMethodArgs = new ArrayList<>();
+        while (parameterNames.hasMoreElements()) {
+            StringBuilder builder = new StringBuilder();
+            String s = parameterNames.nextElement();
+            if (s.contains("id")) {
+                String[] id = parameterMap.get(s);
+                builder.append(id[0]).append("-");
+                if (parameterNames.hasMoreElements()) {
+                    s = parameterNames.nextElement();
+                    if (s.contains("quantity")) {
+                        String[] quantity = parameterMap.get(s);
+                        for (String s2 : quantity) {
+                            builder.append(s2);
+                        }
+                    }
+                }
+            } else if (s.contains("discount")) {
+                String[] discount = parameterMap.get(s);
+                builder.append("card-").append(discount[0]);
+            }
+            postMethodArgs.add(builder.toString());
+        }
+        return postMethodArgs.toArray(new String[0]);
+    }
+
+    public void printToPDF(List<String> list) {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(FILE_PATH));
+            Font font = new Font();
+            Rectangle a5 = PageSize.A5;
+            font.setFamily("Courier");
+            document.setPageSize(a5);
+            document.open();
+            for (String s : list) {
+                document.add(new Paragraph(s, font));
+            }
+        } catch (DocumentException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            document.close();
+        }
     }
 
     public void parseParamsToGoodsAndCard(String[] args, Check check) {

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.clevertec.console.Check;
+import ru.clevertec.console.check.Check;
 import ru.clevertec.console.serviceClass.CheckService;
 
 import java.io.File;

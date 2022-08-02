@@ -1,5 +1,6 @@
-package ru.clevertec.console;
+package ru.clevertec.console.check;
 
+import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.serviceClass.CheckService;
 
 import java.io.IOException;

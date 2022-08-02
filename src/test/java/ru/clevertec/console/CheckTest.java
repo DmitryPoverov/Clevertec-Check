@@ -7,6 +7,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import ru.clevertec.console.check.Check;
+import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.serviceClass.CheckService;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 

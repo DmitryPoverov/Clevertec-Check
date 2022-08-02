@@ -1,8 +1,9 @@
-package ru.clevertec.jdbc.dao.implementations;
+package ru.clevertec.console.dao.implementations;
 
-import ru.clevertec.jdbc.dao.daoInterface.Dao;
-import ru.clevertec.jdbc.entities.Product;
-import ru.clevertec.jdbc.utils.DBConnection;
+import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.utils.ConnectionManager;
+import ru.clevertec.console.utils.ProxyConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ public class ProductsDao implements Dao<Integer, Product> {
             SELECT id, title, price, discount
             FROM check_products
             ORDER BY id
+            LIMIT ?
+            OFFSET ?
             """;
     private static final String FIND_BY_ID = """
             SELECT id, title, price, discount
@@ -40,6 +43,10 @@ public class ProductsDao implements Dao<Integer, Product> {
             DELETE FROM check_products
             where id = ?
             """;
+    private static final String COUNT_ROWS = """
+            SELECT count(title)
+            FROM check_products
+            """;
 
     private ProductsDao() {}
 
@@ -48,26 +55,50 @@ public class ProductsDao implements Dao<Integer, Product> {
     }
 
     @Override
-    public List<Product> findAll() throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+    public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
+
+        ArrayList<Product> cardList = new ArrayList<>();
+        int rows = countAllRows();
+        double maxPageNumber = 0.0;
+
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
-            ResultSet resultSet = statement.executeQuery();
-            ArrayList<Product> result = new ArrayList<>();
-            while (resultSet.next()) {
-                Product product = new Product();
-                product.setId(resultSet.getInt("id"));
-                product.setTitle(resultSet.getString("title"));
-                product.setPrice(resultSet.getDouble("price"));
-                product.setDiscount(resultSet.getBoolean("discount"));
-                result.add(product);
+
+            if (pageSize <= 0) {
+                pageSize = 3;
             }
-            return result;
+            if (pageNumber <= 0) {
+                pageNumber = 1;
+            }
+            if (rows != 0) {
+                maxPageNumber = (double) rows / pageSize;
+                if (maxPageNumber%1 != 0) {
+                    maxPageNumber = (maxPageNumber - maxPageNumber%1) + 1;
+                }
+            }
+
+            if (rows == 0 && pageSize * pageNumber > maxPageNumber * pageSize) {
+                throw new RuntimeException("The table is empty or Wrong page number");
+            } else {
+                statement.setInt(1, pageSize);
+                statement.setInt(2, pageSize * pageNumber - pageSize);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    Product product = new Product();
+                    product.setId(resultSet.getInt("id"));
+                    product.setTitle(resultSet.getString("title"));
+                    product.setPrice(resultSet.getDouble("price"));
+                    product.setDiscount(resultSet.getBoolean("discount"));
+                    cardList.add(product);
+                }
+            }
+            return cardList;
         }
     }
 
     @Override
     public Optional<Product> findById(Integer id) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -78,8 +109,21 @@ public class ProductsDao implements Dao<Integer, Product> {
     }
 
     @Override
+    public Integer countAllRows() throws SQLException {
+        int rows = 0;
+        try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
+             PreparedStatement preparedStatement = connection.prepareStatement(COUNT_ROWS)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                rows = resultSet.getInt(1);
+            }
+        }
+        return rows;
+    }
+
+    @Override
     public String getNameById(Integer id) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -91,7 +135,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public double getPriceById(Integer id) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -103,7 +147,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public boolean isDiscountById(Integer id) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
@@ -115,7 +159,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public Optional<Product> findByName(String name) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
@@ -141,7 +185,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public Product save(Product entity) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(SAVE_NEW_ENTITY, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, entity.getTitle());
             statement.setDouble(2, entity.getPrice());
@@ -157,7 +201,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public boolean update(Product entity) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_ENTITY)) {
             statement.setString(1, entity.getTitle());
             statement.setDouble(2, entity.getPrice());
@@ -169,7 +213,7 @@ public class ProductsDao implements Dao<Integer, Product> {
 
     @Override
     public boolean deleteById(Integer id) throws SQLException {
-        try (Connection connection = DBConnection.getConnection();
+        try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
             statement.setInt(1, id);
             return statement.executeUpdate() == 1;

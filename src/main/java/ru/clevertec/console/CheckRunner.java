@@ -1,5 +1,6 @@
 package ru.clevertec.console;
 
+import ru.clevertec.console.check.Check;
 import ru.clevertec.console.proxy.ServiceHandler;
 import ru.clevertec.console.serviceClass.CheckService;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;

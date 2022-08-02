@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.entities;
+package ru.clevertec.console.entities;
 
 import java.util.Objects;
 
