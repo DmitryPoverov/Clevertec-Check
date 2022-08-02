@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.utils;
+package ru.clevertec.console.utils;
 
 import java.sql.*;
 import java.util.Map;

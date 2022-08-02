@@ -1,4 +1,4 @@
-package ru.clevertec.console;
+package ru.clevertec.console.enums;
 
 public enum Cards {
     CARD1("card-120"),
