@@ -1,4 +1,4 @@
-package ru.clevertec.jdbc.utils;
+package ru.clevertec.console.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,10 +6,11 @@ import java.util.Properties;
 
 public class PropertyManager {
 
-    private static final String FILE = "db.properties";
+    private static final String FILE = "checkConnection.properties";
     private static final String URL = "db.url";
     private static final String USER = "db.user";
     private static final String PASSWORD = "db.password";
+    private static final String DRIVER = "db.driver";
     private static final Properties PROPERTIES;
 
     static {
@@ -42,5 +43,9 @@ public class PropertyManager {
 
     public static String getPassword() {
         return PROPERTIES.getProperty(PASSWORD);
+    }
+
+    public static String getDriver() {
+        return PROPERTIES.getProperty(DRIVER);
     }
 }
