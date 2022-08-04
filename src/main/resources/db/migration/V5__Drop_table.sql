@@ -1,1 +1,0 @@
-DROP TABLE discount_card_try;

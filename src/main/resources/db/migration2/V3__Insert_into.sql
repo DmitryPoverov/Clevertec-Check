@@ -1,4 +1,6 @@
-INSERT INTO discount_card_try(number)
+SET search_path TO test_flyway_schema;
+
+INSERT INTO discount_card_flyway_test(number)
 VALUES ('card-120'),
        ('card-121'),
        ('card-122'),

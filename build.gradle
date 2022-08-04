@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id("war")
-//    id "org.flywaydb.flyway" version "9.1.2"
+    id "org.flywaydb.flyway" version "9.1.2"
     id 'org.liquibase.gradle' version '2.1.1'
 }
 
@@ -14,16 +14,16 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.flywaydb:flyway-core:9.0.4'
     implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
     implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
     implementation 'javax.servlet:jstl:1.2'
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
     implementation 'com.google.code.gson:gson:2.9.0'
-    testImplementation 'junit:junit:4.13.2'
+    implementation 'org.flywaydb:flyway-core:9.1.2'
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
     compileOnly 'org.projectlombok:lombok:1.18.24'
+    testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -39,6 +39,8 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+java.sourceCompatibility = JavaVersion.VERSION_15
 
 liquibase {
     activities {
@@ -156,7 +158,6 @@ task deploy_changeLog_2 {
 /*group = 'ru.clevertec'
 version = '1.0-SNAPSHOT'
 description = 'ClevertecCheck'
-java.sourceCompatibility = JavaVersion.VERSION_15
 
 application {
     mainClass = 'ru.clevertec.console.CheckRunner'
