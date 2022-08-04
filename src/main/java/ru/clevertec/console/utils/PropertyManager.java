@@ -10,6 +10,7 @@ public class PropertyManager {
     private static final String URL = "db.url";
     private static final String USER = "db.user";
     private static final String PASSWORD = "db.password";
+    private static final String DRIVER = "db.driver";
     private static final Properties PROPERTIES;
 
     static {
@@ -34,6 +35,10 @@ public class PropertyManager {
 
     public static String getUrl() {
         return PROPERTIES.getProperty(URL);
+    }
+
+    public static String getDriver() {
+        return PROPERTIES.getProperty(DRIVER);
     }
 
     public static String getUser() {
