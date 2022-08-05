@@ -121,18 +121,6 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     }
 
     @Override
-    public Optional<DiscountCard> findByName(String name) throws SQLException {
-        try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
-            preparedStatement.setString(1, name);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = new DiscountCard();
-            handleResultSet(resultSet, discountCard);
-            return Optional.of(discountCard);
-        }
-    }
-
-    @Override
     public boolean isSuchCard(String name) throws SQLException {
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
