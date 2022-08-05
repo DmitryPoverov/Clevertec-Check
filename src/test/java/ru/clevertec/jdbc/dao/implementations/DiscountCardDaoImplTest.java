@@ -2,8 +2,8 @@ package ru.clevertec.jdbc.dao.implementations;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.console.dao.daoInterface.Dao;
-import ru.clevertec.console.dao.implementations.DiscountCardDao;
+import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
+import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
 import ru.clevertec.console.entities.DiscountCard;
 
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DiscountCardDaoTest {
+public class DiscountCardDaoImplTest {
 
     private static final List<DiscountCard> EXPECTED_FULL_LIST = Arrays.asList(
             new DiscountCard(1, "card-120"),
@@ -30,7 +30,7 @@ public class DiscountCardDaoTest {
     private static final int INCORRECT_ID = 10;
     private static final int ROW_TO_CHANGE = 5;
     private static final int ROW_TO_DELETE = 200;
-    private static final Dao<Integer, DiscountCard> DAO = DiscountCardDao.getInstance();
+    private static final DiscountCardDao<Integer, DiscountCard> DAO = DiscountCardDaoImpl.getInstance();
     private static final DiscountCard DISCOUNT_CARD = new DiscountCard("card-444");
 
     @Test

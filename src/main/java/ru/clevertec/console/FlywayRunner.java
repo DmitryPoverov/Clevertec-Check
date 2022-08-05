@@ -10,21 +10,23 @@ public class FlywayRunner {
 
     public static void main(String[] args) {
 
+/*To create history table and apply 3 scripts: create scheme, table, fill table
         Flyway flyway = Flyway.configure()
                 .cleanDisabled(false)
                 .dataSource(URL, USER, PASSWORD)
+                .locations("classpath:/db/migration")
+                .load();
+        flyway.migrate();*/
+
+/*To delete schema and then to clean history*/
+        Flyway flyway2 = Flyway.configure()
+                .cleanDisabled(false)
+                .ignoreMigrationPatterns("*:pending")
+                .dataSource(URL, USER, PASSWORD)
                 .locations("classpath:/db/migration2")
                 .load();
-
-//Flyway state checking
-//        Configuration configuration = flyway.getConfiguration();
-//        System.out.println(configuration.isCleanDisabled());
-
-//TO apply 3 scripts from migration2
-        flyway.migrate();
-
-//To clean all changes from 3 scripts which have been applied earlier
-//        flyway.clean();
-
+        flyway2.repair();
+        flyway2.migrate();
+        flyway2.clean();
     }
 }

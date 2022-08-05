@@ -1,0 +1,1 @@
+CREATE SCHEMA IF NOT EXISTS test_flyway_schema;

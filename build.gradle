@@ -3,7 +3,7 @@ plugins {
     id 'application'
     id("war")
     id "org.flywaydb.flyway" version "9.1.2"
-    id 'org.liquibase.gradle' version '2.1.1'
+//    id 'org.liquibase.gradle' version '2.1.1'
 }
 
 group 'org.example'
@@ -14,8 +14,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
-    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
     implementation 'javax.servlet:jstl:1.2'
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
     implementation 'com.google.code.gson:gson:2.9.0'
@@ -29,11 +29,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
     implementation 'com.itextpdf:itextpdf:5.5.13.3'
     implementation 'org.postgresql:postgresql:42.4.0'
-    liquibaseRuntime 'org.liquibase:liquibase-core:4.14.0'
-    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:3.0.2'
-    liquibaseRuntime 'info.picocli:picocli:4.6.3'
-    liquibaseRuntime 'org.postgresql:postgresql:42.4.0'
-    liquibaseRuntime group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+//    liquibaseRuntime 'org.liquibase:liquibase-core:4.14.0'
+//    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:3.0.2'
+//    liquibaseRuntime 'info.picocli:picocli:4.6.3'
+//    liquibaseRuntime 'org.postgresql:postgresql:42.4.0'
+//    liquibaseRuntime group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 }
 
 test {
@@ -42,7 +42,7 @@ test {
 
 java.sourceCompatibility = JavaVersion.VERSION_15
 
-liquibase {
+/*liquibase {
     activities {
         main {
             changeLogFile 'src/main/resources/db/changelog/db.changelog.sql'
@@ -95,7 +95,7 @@ task deploy_test_changeLog {
 
 clean.dependsOn dropAll
 update.dependsOn(deploy_changeLog, deploy_test_changeLog)
-processResources.dependsOn update
+processResources.dependsOn update*/
 
 /*flyway {
     activities {

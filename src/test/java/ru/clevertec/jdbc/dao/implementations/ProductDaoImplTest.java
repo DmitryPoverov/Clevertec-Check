@@ -2,8 +2,8 @@ package ru.clevertec.jdbc.dao.implementations;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.console.dao.daoInterface.Dao;
-import ru.clevertec.console.dao.implementations.ProductsDao;
+import ru.clevertec.console.dao.daoInterface.ProductDao;
+import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.entities.Product;
 
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class ProductsDaoTest {
+public class ProductDaoImplTest {
 
     private static final List<Product> EXPECTED_FULL_LIST = Arrays.asList(
             new Product( 1,"Dress1_db",10.11,false),
@@ -32,7 +32,7 @@ public class ProductsDaoTest {
             new Product( 1,"Dress1_db",10.11,false),
             new Product(2,"Pants1_db",10.22,false),
             new Product(3,"Boots1_db",25.33,true));
-    private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
+    private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
     private static final int CORRECT_ID = 1;
     private static final int ZERO = 0;
     private static final int ONE = 1;

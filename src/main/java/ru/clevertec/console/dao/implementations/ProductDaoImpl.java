@@ -1,6 +1,6 @@
 package ru.clevertec.console.dao.implementations;
 
-import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.utils.ConnectionManager;
 import ru.clevertec.console.utils.ProxyConnection;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ProductsDao implements Dao<Integer, Product> {
+public class ProductDaoImpl implements ProductDao<Integer, Product> {
 
-    private static final Dao<Integer, Product> INSTANCE = new ProductsDao();
+    private static final ProductDao<Integer, Product> INSTANCE = new ProductDaoImpl();
     private static final String FIND_ALL = """
             SELECT id, title, price, discount
             FROM check_products
@@ -48,9 +48,9 @@ public class ProductsDao implements Dao<Integer, Product> {
             FROM check_products
             """;
 
-    private ProductsDao() {}
+    private ProductDaoImpl() {}
 
-    public static Dao<Integer, Product> getInstance() {
+    public static ProductDao<Integer, Product> getInstance() {
         return INSTANCE;
     }
 
@@ -167,11 +167,6 @@ public class ProductsDao implements Dao<Integer, Product> {
             handleResultSet(product, resultSet);
             return Optional.of(product);
         }
-    }
-
-    @Override
-    public boolean isSuchCard(String name) {
-        throw new UnsupportedOperationException();
     }
 
     private void handleResultSet(Product product, ResultSet resultSet) throws SQLException {

@@ -3,9 +3,10 @@ package ru.clevertec.console.serviceClass;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
 import ru.clevertec.console.check.Check;
-import ru.clevertec.console.dao.daoInterface.Dao;
-import ru.clevertec.console.dao.implementations.DiscountCardDao;
-import ru.clevertec.console.dao.implementations.ProductsDao;
+import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
+import ru.clevertec.console.dao.daoInterface.ProductDao;
+import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
+import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 public class CheckServiceImpl implements CheckService {
 
     private static CheckService instance;
-    private static final Dao<Integer, Product> DAO = ProductsDao.getInstance();
+    private static final DiscountCardDao<Integer, DiscountCard> DISCOUNT_CARD_DAO = DiscountCardDaoImpl.getInstance();
+    private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
     private static final String FILE_PATH = "C:/Users/PD/IdeaProjects/Clevertec Check/src/main/webapp/resources/pdf_check.pdf";
 
     private CheckServiceImpl() {
@@ -36,19 +38,23 @@ public class CheckServiceImpl implements CheckService {
     }
 
     public String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
-        List<String> postMethodArgs = new ArrayList<>();
+        List<String> methodArgs = new ArrayList<>();
         while (parameterNames.hasMoreElements()) {
-            StringBuilder builder = new StringBuilder();
             String s = parameterNames.nextElement();
+            StringBuilder builder = new StringBuilder();
             if (s.contains("id")) {
                 String[] id = parameterMap.get(s);
-                builder.append(id[0]).append("-");
+                if (!"".equals(id[0])) {
+                    builder.append(id[0]).append("-");
+                }
                 if (parameterNames.hasMoreElements()) {
                     s = parameterNames.nextElement();
                     if (s.contains("quantity")) {
                         String[] quantity = parameterMap.get(s);
                         for (String s2 : quantity) {
-                            builder.append(s2);
+                            if (!"".equals(s2)) {
+                                builder.append(s2);
+                            }
                         }
                     }
                 }
@@ -56,9 +62,11 @@ public class CheckServiceImpl implements CheckService {
                 String[] discount = parameterMap.get(s);
                 builder.append("card-").append(discount[0]);
             }
-            postMethodArgs.add(builder.toString());
+            if (!"".equals(builder.toString())) {
+                methodArgs.add(builder.toString());
+            }
         }
-        return postMethodArgs.toArray(new String[0]);
+        return methodArgs.toArray(new String[0]);
     }
 
     public void printToPDF(List<String> list) {
@@ -81,7 +89,6 @@ public class CheckServiceImpl implements CheckService {
     }
 
     public void parseParamsToGoodsAndCard(String[] args, Check check) {
-        Dao<Integer, DiscountCard> dao = DiscountCardDao.getInstance();
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
@@ -91,7 +98,7 @@ public class CheckServiceImpl implements CheckService {
                 tempList.add(temp);
             } else {
                 try {
-                    if ((c[0] != 0) && ((c[0] == 'c') && dao.isSuchCard(temp))) {
+                    if ((c[0] != 0) && ((c[0] == 'c') && DISCOUNT_CARD_DAO.isSuchCard(temp))) {
                         tempCard = arg.replace("card-", "");
                     } else {
                         System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");

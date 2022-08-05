@@ -1,6 +1,6 @@
 package ru.clevertec.console.dao.implementations;
 
-import ru.clevertec.console.dao.daoInterface.Dao;
+import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.utils.ConnectionManager;
 import ru.clevertec.console.utils.ProxyConnection;
@@ -10,17 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DiscountCardDao implements Dao<Integer, DiscountCard> {
+public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCard> {
 
-    private static final Dao<Integer, DiscountCard> INSTANCE = new DiscountCardDao();
-
-    private DiscountCardDao() {
-    }
-
-    public static Dao<Integer, DiscountCard> getInstance() {
-        return INSTANCE;
-    }
-
+    private static final DiscountCardDao<Integer, DiscountCard> INSTANCE = new DiscountCardDaoImpl();
     private static final String FIND_ALL = """
             SELECT id, number
             FROM check_discount_card
@@ -55,6 +47,13 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
             SELECT count(number)
             FROM check_discount_card
             """;
+
+    private DiscountCardDaoImpl() {
+    }
+
+    public static DiscountCardDao<Integer, DiscountCard> getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public List<DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
@@ -143,21 +142,6 @@ public class DiscountCardDao implements Dao<Integer, DiscountCard> {
             handleResultSet(resultSet, discountCard);
             return discountCard.getId() != 0;
         }
-    }
-
-    @Override
-    public String getNameById(Integer id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getPriceById(Integer id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isDiscountById(Integer id) {
-        throw new UnsupportedOperationException();
     }
 
     private void handleResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
