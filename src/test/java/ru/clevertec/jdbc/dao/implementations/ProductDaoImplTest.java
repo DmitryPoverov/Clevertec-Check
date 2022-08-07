@@ -85,7 +85,7 @@ public class ProductDaoImplTest {
 
     @Test //The test checks: when only 3 elements are returning (limit 3, offset 1 - are default values)
     void testShouldReturnListOfGoodsFromDB() throws SQLException {
-        List<Product> actual = DAO.findAll(ZERO, ZERO);
+        List<Product> actual = DAO.findAll(ZERO, -10);
         Assertions.assertEquals(EXPECTED_LIST_OF_3_ELEMENTS, actual);
     }
 

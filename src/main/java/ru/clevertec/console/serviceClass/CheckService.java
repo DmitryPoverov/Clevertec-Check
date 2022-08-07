@@ -10,6 +10,8 @@ import java.util.Map;
 
 public interface CheckService {
 
+    int getNeededOffset(Integer pageSize, Integer pageNumber);
+
     String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap);
 
     void printToPDF(List<String> list);
@@ -23,8 +25,6 @@ public interface CheckService {
     void printToFile(Check check, String path);
 
     List<String> printToStringList(Check check);
-
-    boolean isValid(String productString);
 
     String[] convertStringToArray(String text, String regex);
 

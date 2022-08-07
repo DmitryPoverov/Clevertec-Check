@@ -11,6 +11,7 @@ import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.exception.WrongIdException;
+import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -35,6 +36,10 @@ public class CheckServiceImpl implements CheckService {
             instance = temporalInstance = new CheckServiceImpl();
         }
         return temporalInstance;
+    }
+
+    public int getNeededOffset(Integer pageSize, Integer pageNumber) {
+        return pageSize * pageNumber - pageSize;
     }
 
     public String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
@@ -117,7 +122,7 @@ public class CheckServiceImpl implements CheckService {
         try (FileWriter fileWriter = new FileWriter(invalidDataFilePath, false)) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String s : strings) {
-                if (isValid(s)) {
+                if (RegexValidator.isValid(s)) {
                     params.add(s);
                 } else {
                     stringBuilder.append(s).append("\n");
@@ -130,10 +135,7 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    public boolean isValid(String productString) {
-        String regex = "^(100|[1-9]\\d?);([A-Z][a-z]{2,29}|[À-ß¨][à-ÿ¸]{2,29});(100\\.00|[1-9]\\d?\\.\\d{2});(20|1\\d|[1-9])$";
-        return productString.matches(regex);
-    }
+
 
     public List<String> createList(Check check) {
         int id;

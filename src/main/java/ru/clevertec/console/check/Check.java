@@ -38,6 +38,7 @@ public class Check {
     public void setDiscountCard(String discountCard) {
         this.discountCard = discountCard;
     }
+
     public String getDiscountCard() {
         return discountCard;
     }

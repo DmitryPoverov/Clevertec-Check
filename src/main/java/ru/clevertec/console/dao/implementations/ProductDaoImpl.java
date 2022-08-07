@@ -2,8 +2,11 @@ package ru.clevertec.console.dao.implementations;
 
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.utils.ConnectionManager;
 import ru.clevertec.console.utils.ProxyConnection;
+import ru.clevertec.console.validators.PageValidator;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +15,8 @@ import java.util.Optional;
 
 public class ProductDaoImpl implements ProductDao<Integer, Product> {
 
-    private static final ProductDao<Integer, Product> INSTANCE = new ProductDaoImpl();
+    private static final ProductDao<Integer, Product> PRODUCT_DAO = new ProductDaoImpl();
+    private static final CheckService SERVICE = CheckServiceImpl.getInstance();
     private static final String FIND_ALL = """
             SELECT id, title, price, discount
             FROM check_products
@@ -51,37 +55,28 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
     private ProductDaoImpl() {}
 
     public static ProductDao<Integer, Product> getInstance() {
-        return INSTANCE;
+        return PRODUCT_DAO;
     }
 
     @Override
     public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
-        ArrayList<Product> cardList = new ArrayList<>();
-        int rows = countAllRows();
+        ArrayList<Product> resultCardList = new ArrayList<>();
+        int allRows = countAllRows();
         double maxPageNumber = 0.0;
+        int neededOffset;
+
+        pageSize = PageValidator.checkAndReturnProductPageSize(pageSize);
+        pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
+        maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
+        neededOffset = SERVICE.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 
-            if (pageSize <= 0) {
-                pageSize = 3;
-            }
-            if (pageNumber <= 0) {
-                pageNumber = 1;
-            }
-            if (rows != 0) {
-                maxPageNumber = (double) rows / pageSize;
-                if (maxPageNumber%1 != 0) {
-                    maxPageNumber = (maxPageNumber - maxPageNumber%1) + 1;
-                }
-            }
-
-            if (rows == 0 && pageSize * pageNumber > maxPageNumber * pageSize) {
-                throw new RuntimeException("The table is empty or Wrong page number");
-            } else {
+            if (PageValidator.isSizeAndNumberAndRowNumberValid(pageSize, pageNumber, allRows, maxPageNumber)) {
                 statement.setInt(1, pageSize);
-                statement.setInt(2, pageSize * pageNumber - pageSize);
+                statement.setInt(2, neededOffset);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
                     Product product = new Product();
@@ -89,10 +84,12 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
                     product.setTitle(resultSet.getString("title"));
                     product.setPrice(resultSet.getDouble("price"));
                     product.setDiscount(resultSet.getBoolean("discount"));
-                    cardList.add(product);
+                    resultCardList.add(product);
                 }
+            } else {
+                throw new RuntimeException("The table is empty or Wrong page number");
             }
-            return cardList;
+            return resultCardList;
         }
     }
 
@@ -102,9 +99,19 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();
-            handleResultSet(product, resultSet);
-            return Optional.of(product);
+            Product product = handleResultSet(resultSet);
+            return Optional.ofNullable(product);
+        }
+    }
+
+    @Override
+    public Optional<Product> findByName(String name) throws SQLException {
+        try (Connection connection = ConnectionManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME)) {
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            Product product = handleResultSet(resultSet);
+            return Optional.ofNullable(product);
         }
     }
 
@@ -151,21 +158,9 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();
+            Product product = new Product();       // <- This one is like in my example
             handleResultSet(product, resultSet);
             return product.isDiscount();
-        }
-    }
-
-    @Override
-    public Optional<Product> findByName(String name) throws SQLException {
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME)) {
-            statement.setString(1, name);
-            ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();
-            handleResultSet(product, resultSet);
-            return Optional.of(product);
         }
     }
 
@@ -176,6 +171,20 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             product.setPrice(resultSet.getDouble("price"));
             product.setDiscount(resultSet.getBoolean("discount"));
         }
+    }
+
+    private Product handleResultSet(ResultSet resultSet) throws SQLException {
+        Product result = null;
+        while (resultSet.next()) {
+            if (resultSet.getInt("id") != 0) {
+                result = new Product();
+                result.setId(resultSet.getInt("id"));
+                result.setTitle(resultSet.getString("title"));
+                result.setPrice(resultSet.getDouble("price"));
+                result.setDiscount(resultSet.getBoolean("discount"));
+            }
+        }
+        return result;
     }
 
     @Override

@@ -2,8 +2,11 @@ package ru.clevertec.console.dao.implementations;
 
 import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.utils.ConnectionManager;
 import ru.clevertec.console.utils.ProxyConnection;
+import ru.clevertec.console.validators.PageValidator;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import java.util.Optional;
 public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCard> {
 
     private static final DiscountCardDao<Integer, DiscountCard> INSTANCE = new DiscountCardDaoImpl();
+    private static final CheckService SERVICE = CheckServiceImpl.getInstance();
     private static final String FIND_ALL = """
             SELECT id, number
             FROM check_discount_card
@@ -48,8 +52,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
             FROM check_discount_card
             """;
 
-    private DiscountCardDaoImpl() {
-    }
+    private DiscountCardDaoImpl() {}
 
     public static DiscountCardDao<Integer, DiscountCard> getInstance() {
         return INSTANCE;
@@ -59,37 +62,30 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     public List<DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
         ArrayList<DiscountCard> cardList = new ArrayList<>();
-        int rows = countAllRows();
+        int allRows = countAllRows();
         double maxPageNumber = 0.0;
+        int neededOffset;
+
+        pageSize = PageValidator.checkAndReturnCardPageSize(pageSize);
+        pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
+        maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
+        neededOffset = SERVICE.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {
 
-            if (pageSize <= 0) {
-                pageSize = 2;
-            }
-            if (pageNumber <= 0) {
-                pageNumber = 1;
-            }
-            if (rows != 0) {
-                maxPageNumber = (double) rows / pageSize;
-                if (maxPageNumber%1 != 0) {
-                    maxPageNumber = (maxPageNumber - maxPageNumber%1) + 1;
-                }
-            }
 
-            if (rows == 0 && pageSize * pageNumber > maxPageNumber * pageSize) {
-                throw new RuntimeException("The table is empty or Wrong page number");
-            } else {
+            if (PageValidator.isSizeAndNumberAndRowNumberValid(pageSize, pageNumber, allRows, maxPageNumber)) {
                 preparedStatement.setInt(1, pageSize);
-                preparedStatement.setInt(2, pageSize * pageNumber - pageSize);
+                preparedStatement.setInt(2, neededOffset);
                 ResultSet resultSet = preparedStatement.executeQuery();
-
                 while (resultSet.next()) {
                     cardList.add(new DiscountCard(
                             resultSet.getInt("id"),
                             resultSet.getString("number")));
                 }
+            } else {
+                throw new RuntimeException("The table is empty or Wrong page number");
             }
             return cardList;
         }
@@ -114,9 +110,8 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = new DiscountCard();
-            handleResultSet(resultSet, discountCard);
-            return Optional.of(discountCard);
+            DiscountCard discountCard = handleResultSet(resultSet);
+            return Optional.ofNullable(discountCard);
         }
     }
 
@@ -133,10 +128,23 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     }
 
     private void handleResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
-        if (resultSet.next()) {
+        while (resultSet.next()) {
             discountCard.setId(resultSet.getInt("id"));
             discountCard.setNumber(resultSet.getString("number"));
         }
+    }
+
+
+    private DiscountCard handleResultSet(ResultSet resultSet) throws SQLException {
+        DiscountCard result = null;
+        while (resultSet.next()) {
+            if (resultSet.getInt("id") != 0) {
+                result = new DiscountCard();
+                result.setId(resultSet.getInt("id"));
+                result.setNumber(resultSet.getString("number"));
+            }
+        }
+        return result;
     }
 
     @Override

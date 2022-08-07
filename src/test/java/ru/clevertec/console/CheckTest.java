@@ -11,6 +11,7 @@ import ru.clevertec.console.check.Check;
 import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.serviceClass.CheckService;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
+import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -93,14 +94,14 @@ public class CheckTest {
     @ParameterizedTest
     @MethodSource("generateCorrectProductList")
     void testShouldCheckRegexWithCorrectValues(String product) {
-        boolean isValid = CHECK_1.getCheckService().isValid(product);
+        boolean isValid = RegexValidator.isValid(product);
         Assertions.assertTrue(isValid);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"8;яЅлќко;10.12;02", "8;Єлка;10.12;2", "28;Apple;1.12;50", "28;APllE;1.12;2"})
     void testShouldCheckRegexWithIncorrectValues(String product) {
-        boolean isValid = CHECK_1.getCheckService().isValid(product);
+        boolean isValid = RegexValidator.isValid(product);
         Assertions.assertFalse(isValid);
     }
 
