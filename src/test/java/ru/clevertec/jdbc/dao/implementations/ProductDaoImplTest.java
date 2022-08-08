@@ -14,33 +14,34 @@ import java.util.Optional;
 public class ProductDaoImplTest {
 
     private static final List<Product> EXPECTED_FULL_LIST = Arrays.asList(
-            new Product( 1,"Dress1_db",10.11,false),
-            new Product(2,"Pants1_db",10.22,false),
-            new Product(3,"Boots1_db",25.33,true),
-            new Product(4,"Shoes1_db",30.44,true),
-            new Product(5,"Jacket1_db",35.55,true),
-            new Product(6,"Hat1_db",140.66,true),
-            new Product(7,"Hat2_db",40.77,true),
-            new Product(8,"West1_db",45.88,false),
-            new Product(9,"West2_db",45.99,true),
-            new Product(10,"Dress2_db",15.00,true),
-            new Product(11,"Pants2_db",20.11,true),
-            new Product(12,"Boots2_db",25.22,false),
-            new Product(13,"Shoes2_db",30.33,true),
-            new Product(14,"Jacket2_db",35.44,true));
+            Product.builder().id(1).title("Dress1_db").price(10.11).discount(false).build(),
+            Product.builder().id(2).title("Pants1_db").price(10.22).discount(false).build(),
+            Product.builder().id(3).title("Boots1_db").price(25.33).discount(true).build(),
+            Product.builder().id(4).title("Shoes1_db").price(30.44).discount(true).build(),
+            Product.builder().id(5).title("Jacket1_db").price(35.55).discount(true).build(),
+            Product.builder().id(6).title("Hat1_db").price(140.66).discount(true).build(),
+            Product.builder().id(7).title("Hat2_db").price(40.77).discount(true).build(),
+            Product.builder().id(8).title("West1_db").price(45.88).discount(false).build(),
+            Product.builder().id(9).title("West2_db").price(45.99).discount(true).build(),
+            Product.builder().id(10).title("Dress2_db").price(15.00).discount(true).build(),
+            Product.builder().id(11).title("Pants2_db").price(20.11).discount(true).build(),
+            Product.builder().id(12).title("Boots2_db").price(25.22).discount(false).build(),
+            Product.builder().id(13).title("Shoes2_db").price(30.33).discount(true).build(),
+            Product.builder().id(14).title("Jacket2_db").price(35.44).discount(true).build());
+
     private static final List<Product> EXPECTED_LIST_OF_3_ELEMENTS = Arrays.asList(
-            new Product( 1,"Dress1_db",10.11,false),
-            new Product(2,"Pants1_db",10.22,false),
-            new Product(3,"Boots1_db",25.33,true));
+            Product.builder().id(1).title("Dress1_db").price(10.11).discount(false).build(),
+            Product.builder().id(2).title("Pants1_db").price(10.22).discount(false).build(),
+            Product.builder().id(3).title("Boots1_db").price(25.33).discount(true).build());
     private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
     private static final int CORRECT_ID = 1;
     private static final int ZERO = 0;
     private static final int ONE = 1;
-    private static final Product EXPECTED_PRODUCT = new Product( 1,"Dress1_db",10.11,false);
+    private static final Product EXPECTED_PRODUCT = Product.builder().id(1).title("Dress1_db").price(10.11).discount(false).build();
     private static final int INCORRECT_ID = 111;
-    private static final Product EXPECTED_INCORRECT_PRODUCT = new Product();
-    private static final Product EXPECTED_SAVED_PRODUCT = new Product("TEST",11.99,true);
-    private static final Product EXPECTED_UPDATED_PRODUCT = new Product(2,"Pants1_db",10.22,false);
+    private static final Product EXPECTED_INCORRECT_PRODUCT = Product.builder().build();
+    private static final Product EXPECTED_SAVED_PRODUCT = Product.builder().id(1).title("TEST").price(11.99).discount(true).build();
+    private static final Product EXPECTED_UPDATED_PRODUCT = Product.builder().id(2).title("Pants1_db").price(10.22).discount(false).build();
     private static final int UPDATED_ID = 2;
     private static final int TRUE_ID = 3;
     private static final int ID_TO_DELETE = 31;

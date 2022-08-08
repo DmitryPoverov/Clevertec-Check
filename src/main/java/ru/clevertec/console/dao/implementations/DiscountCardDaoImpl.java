@@ -61,7 +61,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     @Override
     public List<DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
-        ArrayList<DiscountCard> cardList = new ArrayList<>();
+        ArrayList<DiscountCard> resultCardList = new ArrayList<>();
         int allRows = countAllRows();
         double maxPageNumber = 0.0;
         int neededOffset;
@@ -80,14 +80,15 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
                 preparedStatement.setInt(2, neededOffset);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    cardList.add(new DiscountCard(
-                            resultSet.getInt("id"),
-                            resultSet.getString("number")));
+                    resultCardList.add(DiscountCard.builder()
+                            .id(resultSet.getInt("id"))
+                            .number(resultSet.getString("number"))
+                            .build());
                 }
             } else {
                 throw new RuntimeException("The table is empty or Wrong page number");
             }
-            return cardList;
+            return resultCardList;
         }
     }
 
@@ -110,7 +111,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = handleResultSet(resultSet);
+            DiscountCard discountCard = handleCardResultSet(resultSet);
             return Optional.ofNullable(discountCard);
         }
     }
@@ -121,13 +122,13 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
             preparedStatement.setString(1, name);
             ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = new DiscountCard();
-            handleResultSet(resultSet, discountCard);
+            DiscountCard discountCard = DiscountCard.builder().build();
+            handleCardResultSet(resultSet, discountCard);
             return discountCard.getId() != 0;
         }
     }
 
-    private void handleResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
+    private void handleCardResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
         while (resultSet.next()) {
             discountCard.setId(resultSet.getInt("id"));
             discountCard.setNumber(resultSet.getString("number"));
@@ -135,11 +136,11 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     }
 
 
-    private DiscountCard handleResultSet(ResultSet resultSet) throws SQLException {
+    private DiscountCard handleCardResultSet(ResultSet resultSet) throws SQLException {
         DiscountCard result = null;
         while (resultSet.next()) {
             if (resultSet.getInt("id") != 0) {
-                result = new DiscountCard();
+                result = DiscountCard.builder().build();
                 result.setId(resultSet.getInt("id"));
                 result.setNumber(resultSet.getString("number"));
             }
