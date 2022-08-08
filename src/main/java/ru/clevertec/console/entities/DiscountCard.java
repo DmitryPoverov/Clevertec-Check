@@ -1,52 +1,14 @@
 package ru.clevertec.console.entities;
 
-import java.util.Objects;
+import lombok.*;
 
+@Setter
+@Getter
+@Builder
+@ToString
+@EqualsAndHashCode
 public class DiscountCard {
 
     private int id;
     private String number;
-
-    public DiscountCard() {}
-
-    public DiscountCard(String number) {
-        this.number = number;
-    }
-
-    public DiscountCard(int id, String number) {
-        this.id = id;
-        this.number = number;
-    }
-
-    public int getId() {
-        return id;
-    }
-    public String getNumber() {
-        return number;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    @Override
-    public String toString() {
-        return "Discount Card: " + number;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DiscountCard that = (DiscountCard) o;
-        return id == that.id && Objects.equals(number, that.number);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, number);
-    }
 }

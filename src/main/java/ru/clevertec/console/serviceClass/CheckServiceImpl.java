@@ -25,7 +25,7 @@ public class CheckServiceImpl implements CheckService {
     private static CheckService instance;
     private static final DiscountCardDao<Integer, DiscountCard> DISCOUNT_CARD_DAO = DiscountCardDaoImpl.getInstance();
     private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
-    private static final String FILE_PATH = "C:/Users/PD/IdeaProjects/Clevertec Check/src/main/webapp/resources/pdf_check.pdf";
+    private static final String FILE_PATH = "pdfCheck.pdf";
 
     private CheckServiceImpl() {
     }

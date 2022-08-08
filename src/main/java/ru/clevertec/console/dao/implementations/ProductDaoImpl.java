@@ -52,7 +52,8 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             FROM check_products
             """;
 
-    private ProductDaoImpl() {}
+    private ProductDaoImpl() {
+    }
 
     public static ProductDao<Integer, Product> getInstance() {
         return PRODUCT_DAO;
@@ -61,7 +62,7 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
     @Override
     public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
-        ArrayList<Product> resultCardList = new ArrayList<>();
+        ArrayList<Product> resultProductList = new ArrayList<>();
         int allRows = countAllRows();
         double maxPageNumber = 0.0;
         int neededOffset;
@@ -79,17 +80,16 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
                 statement.setInt(2, neededOffset);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
-                    Product product = new Product();
-                    product.setId(resultSet.getInt("id"));
-                    product.setTitle(resultSet.getString("title"));
-                    product.setPrice(resultSet.getDouble("price"));
-                    product.setDiscount(resultSet.getBoolean("discount"));
-                    resultCardList.add(product);
+                    resultProductList.add(Product.builder()
+                            .id(resultSet.getInt("id"))
+                            .title(resultSet.getString("title"))
+                            .price(resultSet.getDouble("price"))
+                            .discount(resultSet.getBoolean("discount")).build());
                 }
             } else {
                 throw new RuntimeException("The table is empty or Wrong page number");
             }
-            return resultCardList;
+            return resultProductList;
         }
     }
 
@@ -99,7 +99,7 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = handleResultSet(resultSet);
+            Product product = handleProductResultSet(resultSet);
             return Optional.ofNullable(product);
         }
     }
@@ -110,7 +110,7 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_NAME)) {
             statement.setString(1, name);
             ResultSet resultSet = statement.executeQuery();
-            Product product = handleResultSet(resultSet);
+            Product product = handleProductResultSet(resultSet);
             return Optional.ofNullable(product);
         }
     }
@@ -134,8 +134,8 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();
-            handleResultSet(product, resultSet);
+            Product product = Product.builder().build();
+            handleProductResultSet(product, resultSet);
             return product.getTitle();
         }
     }
@@ -146,8 +146,8 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();
-            handleResultSet(product, resultSet);
+            Product product = Product.builder().build();
+            handleProductResultSet(product, resultSet);
             return product.getPrice();
         }
     }
@@ -158,13 +158,13 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-            Product product = new Product();       // <- This one is like in my example
-            handleResultSet(product, resultSet);
+            Product product = Product.builder().build();       // <- This one is like in my example
+            handleProductResultSet(product, resultSet);
             return product.isDiscount();
         }
     }
 
-    private void handleResultSet(Product product, ResultSet resultSet) throws SQLException {
+    private void handleProductResultSet(Product product, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             product.setId(resultSet.getInt("id"));
             product.setTitle(resultSet.getString("title"));
@@ -173,15 +173,15 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
         }
     }
 
-    private Product handleResultSet(ResultSet resultSet) throws SQLException {
+    private Product handleProductResultSet(ResultSet resultSet) throws SQLException {
         Product result = null;
         while (resultSet.next()) {
             if (resultSet.getInt("id") != 0) {
-                result = new Product();
-                result.setId(resultSet.getInt("id"));
-                result.setTitle(resultSet.getString("title"));
-                result.setPrice(resultSet.getDouble("price"));
-                result.setDiscount(resultSet.getBoolean("discount"));
+                result = Product.builder()
+                        .id(resultSet.getInt("id"))
+                        .title(resultSet.getString("title"))
+                        .price(resultSet.getDouble("price"))
+                        .discount(resultSet.getBoolean("discount")).build();
             }
         }
         return result;

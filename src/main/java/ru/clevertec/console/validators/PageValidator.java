@@ -6,19 +6,19 @@ import lombok.experimental.UtilityClass;
 public final class PageValidator {
 
     private static final int DEFAULT_PAGE_NUMBER = 1;
-    private static final int DEFAULT_PRODUCT_PAGE_SIZE = 3;
     private static final int DEFAULT_CARD_PAGE_SIZE = 2;
-
-    public static int checkAndReturnProductPageSize(int pageSize) {
-        if (pageSize <= 0) {
-            pageSize = DEFAULT_PRODUCT_PAGE_SIZE;
-        }
-        return pageSize;
-    }
+    private static final int DEFAULT_PRODUCT_PAGE_SIZE = 3;
 
     public static int checkAndReturnCardPageSize(int pageSize) {
         if (pageSize <= 0) {
             pageSize = DEFAULT_CARD_PAGE_SIZE;
+        }
+        return pageSize;
+    }
+
+    public static int checkAndReturnProductPageSize(int pageSize) {
+        if (pageSize <= 0) {
+            pageSize = DEFAULT_PRODUCT_PAGE_SIZE;
         }
         return pageSize;
     }

@@ -14,24 +14,24 @@ import java.util.Optional;
 public class DiscountCardDaoImplTest {
 
     private static final List<DiscountCard> EXPECTED_FULL_LIST = Arrays.asList(
-            new DiscountCard(1, "card-120"),
-            new DiscountCard(2, "card-121"),
-            new DiscountCard(3, "card-122"),
-            new DiscountCard(4, "card-123"),
-            new DiscountCard(5, "card-777"));
+            DiscountCard.builder().id(1).number("card-120").build(),
+            DiscountCard.builder().id(2).number("card-121").build(),
+            DiscountCard.builder().id(3).number("card-122").build(),
+            DiscountCard.builder().id(4).number("card-123").build(),
+            DiscountCard.builder().id(5).number("card-777").build());
     private static final List<DiscountCard> EXPECTED_LIST_2_ELEMENTS = Arrays.asList(
-            new DiscountCard(1, "card-120"),
-            new DiscountCard(2, "card-121"));
+            DiscountCard.builder().id(1).number("card-120").build(),
+            DiscountCard.builder().id(2).number("card-121").build());
     private static final int ZERO = 0;
     private static final int PAGE_NUMBER_FOR_FULL_LIST = 1;
-    private static final DiscountCard EXPECTED_CARD = new DiscountCard(2, "card-121");
-    private static final DiscountCard INCORRECT_CARD = new DiscountCard();
+    private static final DiscountCard EXPECTED_CARD = DiscountCard.builder().id(2).number("card-121").build();
+    private static final DiscountCard INCORRECT_CARD = DiscountCard.builder().build();
     private static final int CORRECT_ID = 2;
     private static final int INCORRECT_ID = 10;
     private static final int ROW_TO_CHANGE = 5;
     private static final int ROW_TO_DELETE = 200;
     private static final DiscountCardDao<Integer, DiscountCard> DAO = DiscountCardDaoImpl.getInstance();
-    private static final DiscountCard DISCOUNT_CARD = new DiscountCard("card-444");
+    private static final DiscountCard DISCOUNT_CARD = DiscountCard.builder().number("card-444").build();
 
     @Test
     void testShouldAddNewEntityAndReturnItAndThenDeleteIt() throws SQLException {
@@ -43,11 +43,11 @@ public class DiscountCardDaoImplTest {
 
     @Test
     void testShouldUpdateLine() throws SQLException {
-        boolean update = DAO.update(new DiscountCard(ROW_TO_CHANGE, "card-777"));
+        boolean update = DAO.update(DiscountCard.builder().id(ROW_TO_CHANGE).number("card-777").build());
         Assertions.assertTrue(update);
     }
 
-    //The test checks: when only 3 elements are returning (limit 2, offset 1 - are default values)
+    //The test checks: when only 2 elements are returning (limit 2, offset 1 - are default values)
     @Test
     void testShouldReturn2ElementsArrayListOfDiscountCard() throws SQLException {
         List<DiscountCard> actual = DAO.findAll(ZERO, ZERO);
