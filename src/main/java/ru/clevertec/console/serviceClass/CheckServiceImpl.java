@@ -11,9 +11,11 @@ import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.exception.WrongIdException;
+import ru.clevertec.console.proxy.ServiceHandler;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;
+import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -35,14 +37,18 @@ public class CheckServiceImpl implements CheckService {
         if (temporalInstance == null) {
             instance = temporalInstance = new CheckServiceImpl();
         }
-        return temporalInstance;
+/* Creating a proxy object for my service class*/
+        ClassLoader classLoader = temporalInstance.getClass().getClassLoader();
+        Class<?>[] interfaces = temporalInstance.getClass().getInterfaces();
+        return (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(temporalInstance));
+//        return temporalInstance;
     }
 
     public int getNeededOffset(Integer pageSize, Integer pageNumber) {
         return pageSize * pageNumber - pageSize;
     }
 
-    public String[] getArgArray(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
+    public String[] getArgArrayFromRequestParameters(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
         List<String> methodArgs = new ArrayList<>();
         while (parameterNames.hasMoreElements()) {
             String s = parameterNames.nextElement();
@@ -93,11 +99,11 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    public void parseParamsToGoodsAndCard(String[] args, Check check) {
+    public Check getGoodsAndCard(String[] args) {
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
-            String temp = arg.replace(",", "");
+            String temp = arg.replace(", ", "");
             char[] c = temp.toCharArray();
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
                 tempList.add(temp);
@@ -113,12 +119,12 @@ public class CheckServiceImpl implements CheckService {
                 }
             }
         }
-        check.setDiscountCard(tempCard);
-        check.setCheckItemsList(setParamMapper(tempList, "-"));
+        return new Check(tempCard, setProductsAndQuantityToCheckItemList(tempList, "-"));
     }
 
-    public void checkData(String[] strings, String invalidDataFilePath, Check check) {
+    public Check checkProductsWithRegexAndWriteInvalidToFile(String[] strings, String invalidDataFilePath) {
         List<String> params = new ArrayList<>();
+        Check check = new Check();
         try (FileWriter fileWriter = new FileWriter(invalidDataFilePath, false)) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String s : strings) {
@@ -129,13 +135,13 @@ public class CheckServiceImpl implements CheckService {
                 }
             }
             fileWriter.write(stringBuilder.toString());
-            check.setCheckItemsList(setParamMapper(params, ";"));
+            List<CheckItem> checkItems = setProductsAndQuantityToCheckItemList(params, ";");
+            check.setCheckItemList(checkItems);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        return check;
     }
-
-
 
     public List<String> createList(Check check) {
         int id;
@@ -145,14 +151,14 @@ public class CheckServiceImpl implements CheckService {
         int discountProductsCounter = 0;
         double fiveProductDiscount;
         double fiveProductsTotalDiscount = 0;
-        double discountCardDiscount = check.getDiscountCard().equals("") ? 0 : 0.15;
+        double discountCardDiscount = "".equals(check.getDiscountCard()) ? 0 : 0.15;
         double total;
         double totalDiscount;
         double totalPrice = 0;
         double finalPrice;
         List<String> stringsToPrint = new ArrayList<>();
 
-        for (CheckItem pM : check.getCheckItemsList()) {
+        for (CheckItem pM : check.getCheckItemList()) {
             id = pM.getId();
             quantity = pM.getQuantity();
 
@@ -175,7 +181,7 @@ public class CheckServiceImpl implements CheckService {
         stringsToPrint.add("--------------------------------------");
         stringsToPrint.add("QTY DESCRIPTION         PRICE   TOTAL");
 
-        for (CheckItem pM : check.getCheckItemsList()) {
+        for (CheckItem pM : check.getCheckItemList()) {
             fiveProductDiscount = 0;
             id = pM.getId();
 
@@ -214,12 +220,12 @@ public class CheckServiceImpl implements CheckService {
         return stringsToPrint;
     }
 
-    public String convertPathStringToTextString(String path, String delimiter) throws IOException {
+    public String[] getProductArrayFromFile(String path, String delimiter, String regex) throws IOException {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             sb.append(reader.lines().collect(Collectors.joining(delimiter)));
         }
-        return sb.toString();
+        return sb.toString().split(regex);
     }
 
     public void printToFile(Check check, String path) {
@@ -234,7 +240,7 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    public List<CheckItem> setParamMapper(List<String> params, String regex) {
+    public List<CheckItem> setProductsAndQuantityToCheckItemList(List<String> params, String regex) {
         List<CheckItem> checkItems = new ArrayList<>();
         for (String line : params) {
             CheckItem checkItem = new CheckItem();
@@ -265,14 +271,6 @@ public class CheckServiceImpl implements CheckService {
         return checkItems;
     }
 
-    public List<String> printToStringList(Check check) {
-        return createList(check);
-    }
-
-    public String[] convertStringToArray(String text, String regex) {
-        return text.split(regex);
-    }
-
     public void printToConsoleFromFile(Check check) {
         System.out.println("--------------------------------------");
         System.out.println("            CASH RECEIPT");
@@ -282,7 +280,7 @@ public class CheckServiceImpl implements CheckService {
         System.out.println("--------------------------------------");
         System.out.println("QTY DESCRIPTION         PRICE   TOTAL");
         double finalPrice = 0;
-        for (CheckItem pM : check.getCheckItemsList()) {
+        for (CheckItem pM : check.getCheckItemList()) {
             try {
                 String description = pM.getName();
                 int quantity = pM.getQuantity();

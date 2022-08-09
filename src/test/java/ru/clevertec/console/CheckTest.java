@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.clevertec.console.check.Check;
 import ru.clevertec.console.dto.CheckItem;
-import ru.clevertec.console.serviceClass.CheckService;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.validators.RegexValidator;
 
@@ -21,10 +20,8 @@ import java.util.stream.Stream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CheckTest {
 
-    private static final CheckService SERVICE = CheckServiceImpl.getInstance();
-    private static final Check CHECK_1 = new Check(SERVICE);
     private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
-    private static final Check CHECK_2 = new Check(SERVICE, ARGS);
+    private static final Check CHECK_2 = new Check(ARGS);
     private static final String DISCOUNT_CARD_EXPECTED = "123";
     private static final CheckItem PM11 = new CheckItem(1, 2);
     private static final CheckItem PM12 = new CheckItem(2, 2);
@@ -35,18 +32,18 @@ public class CheckTest {
     private static final CheckItem PM25 = new CheckItem(35, "Nectarine", 3.17, 9);
     private static final List<CheckItem> LIST_PM_EXPECTED1 = Arrays.asList(PM11, PM12);
     private static final List<CheckItem> LIST_PM_EXPECTED2 = Arrays.asList(PM21, PM22, PM23, PM24, PM25);
-    private static final String EXPECTED_CONTENT = """
-            28;Apple;1.12;2\r
-            30;Watermelon;2.45;4\r
-            8;Orange;0.99;5\r
-            19;Pear;0.85;1\r
-            26;Cherry;3.18;6\r
-            39;Strawberry;5.20;8\r
-            35;Nectarine;3.17;9\r
-            110;Apple;1.12;2\r
-            28;MyApple;1.12;2\r
-            28;Apple;2.001;2\r
-            28;Apple;1.12;50""";
+    private static final String[] EXPECTED_CONTENT = {
+            "28;Apple;1.12;2",
+            "30;Watermelon;2.45;4",
+            "8;Orange;0.99;5",
+            "19;Pear;0.85;1",
+            "26;Cherry;3.18;6",
+            "39;Strawberry;5.20;8",
+            "35;Nectarine;3.17;9",
+            "110;Apple;1.12;2",
+            "28;MyApple;1.12;2",
+            "28;Apple;2.001;2",
+            "28;Apple;1.12;50"};
     private static final String EXPECTED = """
             --------------------------------------
                         CASH RECEIPT
@@ -72,9 +69,9 @@ public class CheckTest {
     @Test
     public void testGetDescriptionByIdShouldReturnId() throws IOException {
         //given
-        Check check = new Check(SERVICE, "testTask/1.txt");
+        Check check = new Check("testTask/1.txt");
         //when
-        List<String> stringList = check.getCheckService().printToStringList(check);
+        List<String> stringList = CheckServiceImpl.getInstance().createList(check);
         StringBuilder actual = new StringBuilder();
         for (int i=0; i<stringList.size(); i++) {
             if (i==4) {
@@ -108,16 +105,16 @@ public class CheckTest {
     @Test
     void testShouldParseParamsToGoodsAndCard() {
         String discountCardActual = CHECK_2.getDiscountCard();
-// Pavel, is it normal putting two Assertions in one test?
         Assertions.assertEquals(DISCOUNT_CARD_EXPECTED, discountCardActual);
-        Assertions.assertEquals(LIST_PM_EXPECTED1, CHECK_2.getCheckItemsList());
+        Assertions.assertEquals(LIST_PM_EXPECTED1, CHECK_2.getCheckItemList());
     }
 
     @Test
     void testShouldReadPathAndReturnFIleContentAsString() {
         try {
-            String actualContent = CHECK_1.getCheckService().convertPathStringToTextString("testTask/inputData.txt", "\r\n");
-            Assertions.assertEquals(EXPECTED_CONTENT, actualContent);
+            String[] actualContent = CheckServiceImpl.getInstance()
+                    .getProductArrayFromFile("testTask/inputData.txt", "\n", "\n");
+            Assertions.assertArrayEquals(EXPECTED_CONTENT, actualContent);
         } catch (IOException e) {
             System.out.println("! error !");
         }
@@ -125,9 +122,9 @@ public class CheckTest {
 
     @Test
     void testShouldCheckData() {
-        CHECK_1.getCheckService()
-                .checkData(EXPECTED_CONTENT.split("\r\n"), "testTask/invalidData.txt", CHECK_1);
-        List<CheckItem> paramMappersListActual = CHECK_1.getCheckItemsList();
-        Assertions.assertEquals(LIST_PM_EXPECTED2, paramMappersListActual);
+        Check check = CheckServiceImpl.getInstance()
+                .checkProductsWithRegexAndWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
+        List<CheckItem> checkItemList = check.getCheckItemList();
+        Assertions.assertEquals(LIST_PM_EXPECTED2, checkItemList);
     }
 }

@@ -1,52 +1,39 @@
 package ru.clevertec.console.check;
 
+import lombok.Getter;
+import lombok.Setter;
 import ru.clevertec.console.dto.CheckItem;
-import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.serviceClass.CheckServiceImpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
 public class Check {
 
-    private transient CheckService service;
+    private static final String DELIMITER = "";
+    private static final String REGEX = ", ";
+
     private String discountCard;
     private List<CheckItem> checkItemList = new ArrayList<>();
 
-    public Check(CheckService checkService) {
-        service = checkService;
+    public Check() {}
+
+    public Check(String[] arguments) {
+        Check goodsAndCard = CheckServiceImpl.getInstance().getGoodsAndCard(arguments);
+        discountCard = goodsAndCard.getDiscountCard();
+        checkItemList = goodsAndCard.getCheckItemList();
     }
-    public Check(CheckService checkService, String[] arguments) {
-        service = checkService;
-        service.parseParamsToGoodsAndCard(arguments, this);
-    }
-    public Check(CheckService checkService, String path) throws IOException {
-        service = checkService;
-        String contentOfFile = service.convertPathStringToTextString(path, "");
-        String[] argsFromFile = service.convertStringToArray(contentOfFile, ", ");
-        service.parseParamsToGoodsAndCard(argsFromFile, this);
+    public Check(String path) throws IOException {
+        String[] productArray = CheckServiceImpl.getInstance().getProductArrayFromFile(path, DELIMITER, REGEX);
+        CheckServiceImpl.getInstance().getGoodsAndCard(productArray);
     }
 
     public Check(String discountCard, List<CheckItem> checkItemList) {
         this.discountCard = discountCard;
         this.checkItemList = checkItemList;
-    }
-
-    public void setCheckItemsList(List<CheckItem> checkItemList) {
-        this.checkItemList = checkItemList;
-    }
-    public void setDiscountCard(String discountCard) {
-        this.discountCard = discountCard;
-    }
-
-    public String getDiscountCard() {
-        return discountCard;
-    }
-    public List<CheckItem> getCheckItemsList() {
-        return checkItemList;
-    }
-    public CheckService getCheckService() {
-        return service;
     }
 
     @Override

@@ -12,25 +12,21 @@ public interface CheckService {
 
     int getNeededOffset(Integer pageSize, Integer pageNumber);
 
-    String[] getArgArray(Enumeration<String> parameterNames, Map<String, String[]> parameterMap);
+    String[] getArgArrayFromRequestParameters(Enumeration<String> parameterNames, Map<String, String[]> parameterMap);
 
     void printToPDF(List<String> list);
 
-    void parseParamsToGoodsAndCard(String[] arguments, Check check);
+    Check getGoodsAndCard(String[] arguments);
 
-    void checkData(String[] strings, String invalidDataFilePath, Check check);
+    Check checkProductsWithRegexAndWriteInvalidToFile(String[] strings, String invalidDataFilePath);
 
     List<String> createList(Check check);
 
     void printToFile(Check check, String path);
 
-    List<String> printToStringList(Check check);
+    String[] getProductArrayFromFile(String path, String delimiter, String regex) throws IOException;
 
-    String[] convertStringToArray(String text, String regex);
-
-    String convertPathStringToTextString(String path, String delimiter) throws IOException;
-
-    List<CheckItem> setParamMapper(List<String> params, String regex);
+    List<CheckItem> setProductsAndQuantityToCheckItemList(List<String> params, String regex);
 
     void printToConsoleFromFile(Check check);
 }

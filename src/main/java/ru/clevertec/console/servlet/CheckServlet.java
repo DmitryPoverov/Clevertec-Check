@@ -25,8 +25,8 @@ public class CheckServlet extends HttpServlet {
 
         Map<String, String[]> parameterMap = req.getParameterMap();
         String[] args = parameterMap.get("id");
-        Check check = new Check(CHECK_SERVICE, args);
-        List<String> stringsToPrint = check.getCheckService().createList(check);
+        Check check = new Check(args);
+        List<String> stringsToPrint = CheckServiceImpl.getInstance().createList(check);
 
         CHECK_SERVICE.printToPDF(stringsToPrint);
 
@@ -44,10 +44,10 @@ public class CheckServlet extends HttpServlet {
         Enumeration<String> parameterNames = req.getParameterNames();
         Map<String, String[]> parameterMap = req.getParameterMap();
 
-        String[] args = CHECK_SERVICE.getArgArray(parameterNames, parameterMap);
+        String[] args = CHECK_SERVICE.getArgArrayFromRequestParameters(parameterNames, parameterMap);
 
-        Check check = new Check(CHECK_SERVICE, args);
-        List<String> stringsToPrint = check.getCheckService().createList(check);
+        Check check = new Check(args);
+        List<String> stringsToPrint = CheckServiceImpl.getInstance().createList(check);
 
         CHECK_SERVICE.printToPDF(stringsToPrint);
 

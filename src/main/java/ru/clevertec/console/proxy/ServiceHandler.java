@@ -39,7 +39,7 @@ public class ServiceHandler implements InvocationHandler {
             });
         }
         if ("printToConsoleFromFile".equals(method.getName()) ||
-                "printToStringList".equals(method.getName()) ||
+//                "createList".equals(method.getName()) ||
                 "printToFile".equals(method.getName())) {
             File file = new File("src/main/resources/checkFile.json");
             try (FileWriter writer = new FileWriter(file, false)) {
