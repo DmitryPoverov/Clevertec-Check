@@ -12,7 +12,7 @@ public interface CheckService {
 
     int getNeededOffset(Integer pageSize, Integer pageNumber);
 
-    String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap);
+    String[] getArgArray(Enumeration<String> parameterNames, Map<String, String[]> parameterMap);
 
     void printToPDF(List<String> list);
 

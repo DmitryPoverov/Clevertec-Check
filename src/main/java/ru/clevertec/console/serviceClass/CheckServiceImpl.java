@@ -25,7 +25,7 @@ public class CheckServiceImpl implements CheckService {
     private static CheckService instance;
     private static final DiscountCardDao<Integer, DiscountCard> DISCOUNT_CARD_DAO = DiscountCardDaoImpl.getInstance();
     private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
-    private static final String FILE_PATH = "pdfCheck.pdf";
+    private static final String FILE_PATH = "/pdfCheck.pdf";
 
     private CheckServiceImpl() {
     }
@@ -42,7 +42,7 @@ public class CheckServiceImpl implements CheckService {
         return pageSize * pageNumber - pageSize;
     }
 
-    public String[] getArgsList(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
+    public String[] getArgArray(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
         List<String> methodArgs = new ArrayList<>();
         while (parameterNames.hasMoreElements()) {
             String s = parameterNames.nextElement();
