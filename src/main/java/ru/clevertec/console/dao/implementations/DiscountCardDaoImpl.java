@@ -111,32 +111,22 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = handleCardResultSet(resultSet);
-            return Optional.ofNullable(discountCard);
+            return handleCardResultSet(resultSet);
         }
     }
 
     @Override
-    public boolean isSuchCard(String name) throws SQLException {
+    public Optional<DiscountCard> findByName(String name) throws SQLException {
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_NAME)) {
             preparedStatement.setString(1, name);
             ResultSet resultSet = preparedStatement.executeQuery();
-            DiscountCard discountCard = DiscountCard.builder().build();
-            handleCardResultSet(resultSet, discountCard);
-            return discountCard.getId() != 0;
-        }
-    }
-
-    private void handleCardResultSet(ResultSet resultSet, DiscountCard discountCard) throws SQLException {
-        while (resultSet.next()) {
-            discountCard.setId(resultSet.getInt("id"));
-            discountCard.setNumber(resultSet.getString("number"));
+            return handleCardResultSet(resultSet);
         }
     }
 
 
-    private DiscountCard handleCardResultSet(ResultSet resultSet) throws SQLException {
+    private Optional<DiscountCard> handleCardResultSet(ResultSet resultSet) throws SQLException {
         DiscountCard result = null;
         while (resultSet.next()) {
             if (resultSet.getInt("id") != 0) {
@@ -145,7 +135,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
                 result.setNumber(resultSet.getString("number"));
             }
         }
-        return result;
+        return Optional.ofNullable(result);
     }
 
     @Override

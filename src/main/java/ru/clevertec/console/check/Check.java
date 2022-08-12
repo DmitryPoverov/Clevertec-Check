@@ -1,6 +1,8 @@
 package ru.clevertec.console.check;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Check {
 
     private static final String DELIMITER = "";
@@ -18,8 +22,6 @@ public class Check {
 
     private String discountCard;
     private List<CheckItem> checkItemList = new ArrayList<>();
-
-    public Check() {}
 
     public Check(String[] arguments) {
         Check goodsAndCard = CheckServiceImpl.getInstance().getGoodsAndCard(arguments);
@@ -29,11 +31,6 @@ public class Check {
     public Check(String path) throws IOException {
         String[] productArray = CheckServiceImpl.getInstance().getProductArrayFromFile(path, DELIMITER, REGEX);
         CheckServiceImpl.getInstance().getGoodsAndCard(productArray);
-    }
-
-    public Check(String discountCard, List<CheckItem> checkItemList) {
-        this.discountCard = discountCard;
-        this.checkItemList = checkItemList;
     }
 
     @Override

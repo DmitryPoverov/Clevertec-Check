@@ -12,7 +12,6 @@ public class FlywayRunner1th2th3thScripts {
 
 /*To create history table and apply 3 scripts: create scheme, table, fill table*/
         Flyway flyway = Flyway.configure()
-                .cleanDisabled(false)
                 .dataSource(URL, USER, PASSWORD)
                 .locations("classpath:/db/migration")
                 .load();

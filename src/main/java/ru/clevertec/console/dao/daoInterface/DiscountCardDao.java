@@ -12,7 +12,7 @@ public interface DiscountCardDao<K,T> {
 
     Optional<T> findById(K id) throws SQLException;
 
-    boolean isSuchCard(String name) throws SQLException;
+    Optional<T> findByName(String name) throws SQLException;
 
     boolean deleteById(K id) throws SQLException;
 

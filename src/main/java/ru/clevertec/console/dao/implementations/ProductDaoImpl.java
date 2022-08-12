@@ -140,30 +140,6 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
         }
     }
 
-    @Override
-    public double getPriceById(Integer id) throws SQLException {
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            Product product = Product.builder().build();
-            handleProductResultSet(product, resultSet);
-            return product.getPrice();
-        }
-    }
-
-    @Override
-    public boolean isDiscountById(Integer id) throws SQLException {
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            Product product = Product.builder().build();       // <- This one is like in my example
-            handleProductResultSet(product, resultSet);
-            return product.isDiscount();
-        }
-    }
-
     private void handleProductResultSet(Product product, ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             product.setId(resultSet.getInt("id"));

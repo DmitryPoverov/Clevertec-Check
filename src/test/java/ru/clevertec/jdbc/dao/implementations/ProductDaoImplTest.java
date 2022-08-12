@@ -50,8 +50,10 @@ public class ProductDaoImplTest {
 
     @Test
     void testShouldReturnPriceById() throws SQLException {
-        double priceById = DAO.getPriceById(CORRECT_ID);
-        Assertions.assertEquals(EXPECTED_PRICE_BY_ID, priceById);
+        if (DAO.findById(CORRECT_ID).isPresent()) {
+            double priceById = DAO.findById(CORRECT_ID).get().getPrice();
+            Assertions.assertEquals(EXPECTED_PRICE_BY_ID, priceById);
+        }
     }
 
     @Test
@@ -68,14 +70,18 @@ public class ProductDaoImplTest {
 
     @Test
     void testShouldReturnFalse() throws SQLException {
-        boolean discountById = DAO.isDiscountById(UPDATED_ID);
-        Assertions.assertFalse(discountById);
+        if (DAO.findById(UPDATED_ID).isPresent()) {
+            boolean discountById = DAO.findById(UPDATED_ID).get().isDiscount();
+            Assertions.assertFalse(discountById);
+        }
     }
 
     @Test
     void testShouldReturnTrue() throws SQLException {
-        boolean discountById = DAO.isDiscountById(TRUE_ID);
-        Assertions.assertTrue(discountById);
+        if (DAO.findById(TRUE_ID).isPresent()) {
+            boolean discountById = DAO.findById(TRUE_ID).get().isDiscount();
+            Assertions.assertTrue(discountById);
+        }
     }
 
     @Test //The test checks: when all elements are returning

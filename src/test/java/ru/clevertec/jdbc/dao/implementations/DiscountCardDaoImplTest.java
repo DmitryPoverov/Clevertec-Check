@@ -9,6 +9,7 @@ import ru.clevertec.console.entities.DiscountCard;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class DiscountCardDaoImplTest {
@@ -22,16 +23,16 @@ public class DiscountCardDaoImplTest {
     private static final List<DiscountCard> EXPECTED_LIST_2_ELEMENTS = Arrays.asList(
             DiscountCard.builder().id(1).number("card-120").build(),
             DiscountCard.builder().id(2).number("card-121").build());
-    private static final int ZERO = 0;
-    private static final int PAGE_NUMBER_FOR_FULL_LIST = 1;
-    private static final DiscountCard EXPECTED_CARD = DiscountCard.builder().id(2).number("card-121").build();
-    private static final DiscountCard INCORRECT_CARD = DiscountCard.builder().build();
-    private static final int CORRECT_ID = 2;
-    private static final int INCORRECT_ID = 10;
-    private static final int ROW_TO_CHANGE = 5;
-    private static final int ROW_TO_DELETE = 200;
+    private static final DiscountCard EXPECTED_CORRECT_CARD = DiscountCard.builder().id(2).number("card-121").build();
     private static final DiscountCardDao<Integer, DiscountCard> DAO = DiscountCardDaoImpl.getInstance();
     private static final DiscountCard DISCOUNT_CARD = DiscountCard.builder().number("card-444").build();
+    private static final int ZERO = 0;
+    private static final int PAGE_NUMBER_FOR_FULL_LIST = 1;
+    private static final int CORRECT_ID = 2;
+    private static final int INCORRECT_CARD_ID = 100;
+    private static final int ROW_TO_CHANGE = 5;
+    private static final int ROW_TO_DELETE = 200;
+    private static final String CORRECT_NAME = "card-121";
 
     @Test
     void testShouldAddNewEntityAndReturnItAndThenDeleteIt() throws SQLException {
@@ -39,6 +40,15 @@ public class DiscountCardDaoImplTest {
         Assertions.assertEquals(DISCOUNT_CARD, actual);
         boolean deleteById = DAO.deleteById(actual.getId());
         Assertions.assertTrue(deleteById);
+    }
+
+    @Test
+    void testShouldReturnCorrectCardByName() throws SQLException {
+        Optional<DiscountCard> byName = DAO.findByName(CORRECT_NAME);
+        if (byName.isPresent()) {
+            DiscountCard actualDiscountCard = byName.get();
+            Assertions.assertEquals(actualDiscountCard, EXPECTED_CORRECT_CARD);
+        }
     }
 
     @Test
@@ -72,16 +82,13 @@ public class DiscountCardDaoImplTest {
         Optional<DiscountCard> byId = DAO.findById(CORRECT_ID);
         if (byId.isPresent()) {
             DiscountCard actual = byId.get();
-            Assertions.assertEquals(EXPECTED_CARD, actual);
+            Assertions.assertEquals(EXPECTED_CORRECT_CARD, actual);
         }
     }
 
     @Test
     void testShouldReturnIncorrectCard() throws SQLException {
-        Optional<DiscountCard> byId = DAO.findById(INCORRECT_ID);
-        if (byId.isPresent()) {
-            DiscountCard actual = byId.get();
-            Assertions.assertEquals(INCORRECT_CARD, actual);
-        }
+        Optional<DiscountCard> byId = DAO.findById(INCORRECT_CARD_ID);
+        Assertions.assertThrows(NoSuchElementException.class, byId::get);
     }
 }

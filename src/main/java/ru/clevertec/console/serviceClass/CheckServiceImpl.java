@@ -10,7 +10,6 @@ import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.exception.WrongIdException;
 import ru.clevertec.console.proxy.ServiceHandler;
 import ru.clevertec.console.validators.RegexValidator;
 
@@ -37,7 +36,7 @@ public class CheckServiceImpl implements CheckService {
         if (temporalInstance == null) {
             instance = temporalInstance = new CheckServiceImpl();
         }
-/* Creating a proxy object for my service class*/
+        /* Creating a proxy object for my service class*/
         ClassLoader classLoader = temporalInstance.getClass().getClassLoader();
         Class<?>[] interfaces = temporalInstance.getClass().getInterfaces();
         return (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(temporalInstance));
@@ -109,7 +108,7 @@ public class CheckServiceImpl implements CheckService {
                 tempList.add(temp);
             } else {
                 try {
-                    if ((c[0] != 0) && ((c[0] == 'c') && DISCOUNT_CARD_DAO.isSuchCard(temp))) {
+                    if ((c[0] != 0) && ((c[0] == 'c') && DISCOUNT_CARD_DAO.findByName(temp).isPresent())) {
                         tempCard = arg.replace("card-", "");
                     } else {
                         System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
@@ -163,11 +162,9 @@ public class CheckServiceImpl implements CheckService {
             quantity = pM.getQuantity();
 
             try {
-                if (DAO.isDiscountById(id)) {
+                if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
                     discountProductsCounter += quantity;
                 }
-            } catch (WrongIdException e) {
-                System.out.println("!!! It seems like id=" + id + " is wrong !!!");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -186,26 +183,33 @@ public class CheckServiceImpl implements CheckService {
             id = pM.getId();
 
             try {
-                description = DAO.getNameById(pM.getId());
-                price = DAO.getPriceById(pM.getId());
-                quantity = pM.getQuantity();
-                if (discountProductsCounter > 5) {
-                    fiveProductDiscount = 0.2;
-                }
-                if (DAO.isDiscountById(id)) {
-                    double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
-                    fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
-                    total = price * quantity - fiveProductsCurrentDiscount;
-                } else {
-                    total = price * quantity;
-                }
-                totalPrice += total;
 
-                stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
-            } catch (WrongIdException ignored) {
+                if (DAO.findById(pM.getId()).isPresent()) {
+//                description = DAO.getNameById(pM.getId());
+                    description = DAO.findById(pM.getId()).get().getTitle();
+//                price = DAO.getPriceById(pM.getId());
+                    price = DAO.findById(pM.getId()).get().getPrice();
+                    quantity = pM.getQuantity();
+                    if (discountProductsCounter > 5) {
+                        fiveProductDiscount = 0.2;
+                    }
+                    if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
+                        double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
+                        fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
+                        total = price * quantity - fiveProductsCurrentDiscount;
+                    } else {
+                        total = price * quantity;
+                    }
+                    totalPrice += total;
+
+                    stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
+                }
+
+
             } catch (SQLException sqlException) {
                 sqlException.printStackTrace();
             }
+
         }
         totalDiscount = totalPrice * discountCardDiscount;
         finalPrice = totalPrice - totalDiscount;
@@ -281,16 +285,14 @@ public class CheckServiceImpl implements CheckService {
         System.out.println("QTY DESCRIPTION         PRICE   TOTAL");
         double finalPrice = 0;
         for (CheckItem pM : check.getCheckItemList()) {
-            try {
-                String description = pM.getName();
-                int quantity = pM.getQuantity();
-                double price = pM.getPrice();
-                double total = quantity * price;
-                finalPrice += total;
 
-                System.out.printf("%2d  %-17s %7.2f  %6.2f%n", quantity, description, price, total);
-            } catch (WrongIdException ignored) {
-            }
+            String description = pM.getName();
+            int quantity = pM.getQuantity();
+            double price = pM.getPrice();
+            double total = quantity * price;
+            finalPrice += total;
+
+            System.out.printf("%2d  %-17s %7.2f  %6.2f%n", quantity, description, price, total);
         }
         System.out.println("--------------------------------------");
         System.out.printf("TOTAL %31.2f%n", finalPrice);

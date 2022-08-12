@@ -16,10 +16,6 @@ public interface ProductDao<K,T> {
 
     String getNameById(K id) throws SQLException;
 
-    double getPriceById(K id) throws SQLException;
-
-    boolean isDiscountById(K id) throws SQLException;
-
     boolean deleteById(K id) throws SQLException;
 
     boolean update(T entity) throws SQLException;
