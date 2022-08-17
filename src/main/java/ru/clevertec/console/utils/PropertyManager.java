@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class PropertyManager {
 
-    private static final String FILE = "db.properties";
+    private static final String FILE = "checkConnection.properties";
     private static final String URL = "db.url";
     private static final String USER = "db.user";
     private static final String PASSWORD = "db.password";
@@ -47,5 +47,9 @@ public class PropertyManager {
 
     public static String getPassword() {
         return PROPERTIES.getProperty(PASSWORD);
+    }
+
+    public static String getDriver() {
+        return PROPERTIES.getProperty(DRIVER);
     }
 }
