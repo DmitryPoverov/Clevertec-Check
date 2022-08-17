@@ -1,4 +1,4 @@
-package ru.clevertec.console.dto;
+package ru.clevertec.console.entities;
 
 import lombok.*;
 
@@ -11,7 +11,7 @@ import lombok.*;
 public class CheckItem {
 
     private int id;
-    private String name;
+    private String title;
     private double price;
     private int quantity;
 

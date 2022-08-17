@@ -7,7 +7,7 @@ import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
 import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.dto.CheckItem;
+import ru.clevertec.console.entities.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.validators.RegexValidator;
@@ -155,9 +155,9 @@ public class CheckServiceImpl implements CheckService {
         double finalPrice;
         List<String> stringsToPrint = new ArrayList<>();
 
-        for (CheckItem pM : check.getCheckItemList()) {
-            id = pM.getId();
-            quantity = pM.getQuantity();
+        for (CheckItem checkItem : check.getCheckItemList()) {
+            id = checkItem.getId();
+            quantity = checkItem.getQuantity();
 
             try {
                 if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
@@ -176,18 +176,18 @@ public class CheckServiceImpl implements CheckService {
         stringsToPrint.add("--------------------------------------");
         stringsToPrint.add("QTY DESCRIPTION         PRICE   TOTAL");
 
-        for (CheckItem pM : check.getCheckItemList()) {
+        for (CheckItem checkItem : check.getCheckItemList()) {
             fiveProductDiscount = 0;
-            id = pM.getId();
+            id = checkItem.getId();
 
             try {
 
-                if (DAO.findById(pM.getId()).isPresent()) {
-//                description = DAO.getNameById(pM.getId());
-                    description = DAO.findById(pM.getId()).get().getTitle();
-//                price = DAO.getPriceById(pM.getId());
-                    price = DAO.findById(pM.getId()).get().getPrice();
-                    quantity = pM.getQuantity();
+                if (DAO.findById(checkItem.getId()).isPresent()) {
+//                description = DAO.getNameById(checkItem.getId());
+                    description = DAO.findById(checkItem.getId()).get().getTitle();
+//                price = DAO.getPriceById(checkItem.getId());
+                    price = DAO.findById(checkItem.getId()).get().getPrice();
+                    quantity = checkItem.getQuantity();
                     if (discountProductsCounter > 5) {
                         fiveProductDiscount = 0.2;
                     }
@@ -260,7 +260,7 @@ public class CheckServiceImpl implements CheckService {
                     if (i == 0) {
                         checkItem.setId(Integer.parseInt(paramsOfItem[i]));
                     } else if (i == 1) {
-                        checkItem.setName(paramsOfItem[i]);
+                        checkItem.setTitle(paramsOfItem[i]);
                     } else if (i == 2) {
                         checkItem.setPrice(Double.parseDouble(paramsOfItem[i]));
                     } else {
@@ -282,11 +282,11 @@ public class CheckServiceImpl implements CheckService {
         System.out.println("--------------------------------------");
         System.out.println("QTY DESCRIPTION         PRICE   TOTAL");
         double finalPrice = 0;
-        for (CheckItem pM : check.getCheckItemList()) {
+        for (CheckItem checkItem : check.getCheckItemList()) {
 
-            String description = pM.getName();
-            int quantity = pM.getQuantity();
-            double price = pM.getPrice();
+            String description = checkItem.getTitle();
+            int quantity = checkItem.getQuantity();
+            double price = checkItem.getPrice();
             double total = quantity * price;
             finalPrice += total;
 

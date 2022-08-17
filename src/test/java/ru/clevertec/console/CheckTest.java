@@ -8,7 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.clevertec.console.check.Check;
-import ru.clevertec.console.dto.CheckItem;
+import ru.clevertec.console.entities.CheckItem;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.validators.RegexValidator;
 
