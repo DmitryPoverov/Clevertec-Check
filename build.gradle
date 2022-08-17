@@ -3,11 +3,15 @@ plugins {
     id 'application'
     id("war")
     id "org.flywaydb.flyway" version "9.1.2"
-//    id 'org.liquibase.gradle' version '2.1.1'
 }
 
-group 'org.example'
+group 'ru.clevertec'
 version '1.0-SNAPSHOT'
+description = 'ClevertecCheck'
+
+application {
+    mainClass = 'ru.clevertec.console.CheckRunner'
+}
 
 repositories {
     mavenCentral()
@@ -16,27 +20,30 @@ repositories {
 dependencies {
     implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
-    implementation 'javax.servlet:jstl:1.2'
     implementation 'javax.servlet.jsp.jstl:jstl-api:1.2-rev-1'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.flywaydb:flyway-core:9.1.2'
     implementation 'com.itextpdf:itextpdf:5.5.13.3'
     implementation 'org.postgresql:postgresql:42.4.0'
+    implementation 'org.springframework:spring-core:5.3.22'
+    implementation 'org.springframework:spring-beans:5.3.22'
+    implementation 'org.springframework:spring-context:5.3.22'
+
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
     compileOnly 'javax.servlet.jsp:javax.servlet.jsp-api:2.3.3'
     compileOnly 'org.projectlombok:lombok:1.18.24'
+
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
+
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
-//    liquibaseRuntime 'org.liquibase:liquibase-core:4.14.0'
-//    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:3.0.2'
-//    liquibaseRuntime 'info.picocli:picocli:4.6.3'
-//    liquibaseRuntime 'org.postgresql:postgresql:42.4.0'
-//    liquibaseRuntime group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 }
 
 test {
@@ -44,127 +51,6 @@ test {
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_15
-
-/*liquibase {
-    activities {
-        main {
-            changeLogFile 'src/main/resources/db/changelog/db.changelog.sql'
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/postgres"
-            username "postgres"
-            password "postgres"
-        }
-        test {
-            changeLogFile 'src/main/resources/db/changelog/db.changelog.sql'
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/postgres"
-            username "postgres"
-            password "postgres"
-        }
-    }
-}
-
-task deploy_changeLog {
-    doFirst() {
-        liquibase {
-            activities {
-                main {
-                    driver "org.postgresql.Driver"
-                    changeLogFile 'src/main/resources/db/changelog/db.changelog.sql'
-                    url "jdbc:postgresql://localhost:5432/postgres"
-                    username "postgres"
-                    password "postgres"
-                }
-            }
-        }
-    }
-}
-
-task deploy_test_changeLog {
-    doFirst() {
-        liquibase {
-            activities {
-                test {
-                    changeLogFile 'src/main/resources/db/changelog/db.changelog.sql'
-                    driver "org.postgresql.Driver"
-                    url "jdbc:postgresql://localhost:5432/postgres"
-                    username "postgres"
-                    password "postgres"
-                }
-            }
-        }
-    }
-}
-
-clean.dependsOn dropAll
-update.dependsOn(deploy_changeLog, deploy_test_changeLog)
-processResources.dependsOn update*/
-
-/*flyway {
-    activities {
-        main {
-            changeLogFile 'src/main/resources/db/migration/V1__Create_discount_card_try_table.sql'
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/postgres"
-            username "postgres"
-            password "postgres"
-        }
-    }
-}
-
-flyway {
-    activities {
-        test {
-            changeLogFile 'src/main/resources/db/changelog/db.changelog-master.sql'
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/postgres"
-            username "postgres"
-            password "postgres"
-        }
-    }
-}
-
-task deploy_changeLog_1 {
-    doFirst() {
-        flyway() {
-            activities {
-                main {
-                    driver "org.postgresql.Driver"
-                    changeLogFile 'src/main/resources/db/changelog/V3__Create_Table.sql'
-                    url "jdbc:postgresql://localhost:5432/postgres"
-                    username "postgres"
-                    password "postgres"
-                }
-            }
-        }
-    }
-}
-
-task deploy_changeLog_2 {
-    doFirst() {
-        flyway {
-            activities {
-                main {
-                    driver "org.postgresql.Driver"
-                    changeLogFile 'src/main/resources/db/changelog/V4__Insert_into.sql'
-                    url "jdbc:postgresql://localhost:5432/postgres"
-                    username "postgres"
-                    password "postgres"
-                }
-            }
-        }
-    }
-}
-*/
-
-
-/*group = 'ru.clevertec'
-version = '1.0-SNAPSHOT'
-description = 'ClevertecCheck'
-
-application {
-    mainClass = 'ru.clevertec.console.CheckRunner'
-}*/
 
 /*tasks.withType(Test) {
     useJUnitPlatform()
@@ -183,12 +69,12 @@ task copyFiles(type: Copy) {
     include '1.txt'
 }
 
-
 //This task downloads 2.txt-file from gitHub.com to a local folder /testTask/tempDownload
 task downloadFiles(type: FileDownloader) {
     sourceUrl = 'https://github.com/DmitryPoverov/Clevertec-Check/blob/master/testTask/2.txt?raw=true'
     outputFile = new File('testTask/tempDownload/2.txt')
 }
+
 //This is a body of the downloadFiles task
 class FileDownloader extends DefaultTask {
     @Input
@@ -227,29 +113,3 @@ bye {
     println("Task2")
     println("Task2 add")
 }*/
-
-/*//Here's a custom plugin
-//Extension
-class WeatherExtension {
-    String forecast = 'My default value'
-}
-
-class WeatherForecastPlugin implements Plugin<Project>{
-
-    @Override
-    void apply(Project project) {
-
-        def extension = project.extensions.create('weather', WeatherExtension)
-
-        project.task('weatherTomorrow'){
-            group = 'Weather'
-            doLast{
-                println 'Tomorrow it will be' + extension.forecast
-            }
-        }
-    }
-}
-
-apply plugin: WeatherForecastPlugin
-
-weather.forecast = ' snow and hail and -10 degree centigrade.'*/
