@@ -37,6 +37,10 @@ public class PropertyManager {
         return PROPERTIES.getProperty(URL);
     }
 
+    public static String getDriver() {
+        return PROPERTIES.getProperty(DRIVER);
+    }
+
     public static String getUser() {
         return PROPERTIES.getProperty(USER);
     }
