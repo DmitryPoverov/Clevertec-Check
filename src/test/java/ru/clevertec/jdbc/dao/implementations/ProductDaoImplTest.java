@@ -1,10 +1,13 @@
 package ru.clevertec.jdbc.dao.implementations;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.entities.Product;
+import ru.clevertec.flywayClasses.FlywayCreator;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -47,6 +50,16 @@ public class ProductDaoImplTest {
     private static final int ID_TO_DELETE = 31;
     private static final double EXPECTED_PRICE_BY_ID = 10.11;
     private static final String CORRECT_ID_NAME = "Dress1_db";
+
+    @BeforeAll
+    static void init() {
+        FlywayCreator.createAndFill();
+    }
+
+    @AfterAll
+    static void close() {
+        FlywayCreator.dropEverything();
+    }
 
     @Test
     void testShouldReturnPriceById() throws SQLException {

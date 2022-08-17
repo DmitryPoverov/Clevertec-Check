@@ -10,11 +10,9 @@ import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.dto.CheckItem;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.proxy.ServiceHandler;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;
-import java.lang.reflect.Proxy;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,11 +34,11 @@ public class CheckServiceImpl implements CheckService {
         if (temporalInstance == null) {
             instance = temporalInstance = new CheckServiceImpl();
         }
-        /* Creating a proxy object for my service class*/
+        /* Creating a proxy object for my service class
         ClassLoader classLoader = temporalInstance.getClass().getClassLoader();
         Class<?>[] interfaces = temporalInstance.getClass().getInterfaces();
-        return (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(temporalInstance));
-//        return temporalInstance;
+        return (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(temporalInstance));*/
+        return temporalInstance;
     }
 
     public int getNeededOffset(Integer pageSize, Integer pageNumber) {
