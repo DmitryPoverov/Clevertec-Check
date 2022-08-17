@@ -1,21 +1,32 @@
 package ru.clevertec.console.serviceClass;
 
-import ru.clevertec.console.Cards;
-import ru.clevertec.console.Check;
-import ru.clevertec.console.CheckItem;
-import ru.clevertec.console.Products;
-import ru.clevertec.exception.WrongIdException;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
+import ru.clevertec.console.check.Check;
+import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
+import ru.clevertec.console.dao.daoInterface.ProductDao;
+import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
+import ru.clevertec.console.dao.implementations.ProductDaoImpl;
+import ru.clevertec.console.dto.CheckItem;
+import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.proxy.ServiceHandler;
+import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;
+import java.lang.reflect.Proxy;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CheckServiceImpl implements CheckService {
 
     private static CheckService instance;
+    private static final DiscountCardDao<Integer, DiscountCard> DISCOUNT_CARD_DAO = DiscountCardDaoImpl.getInstance();
+    private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
+    private static final String FILE_PATH = "/pdfCheck.pdf";
 
     private CheckServiceImpl() {
     }
@@ -25,48 +36,110 @@ public class CheckServiceImpl implements CheckService {
         if (temporalInstance == null) {
             instance = temporalInstance = new CheckServiceImpl();
         }
-        return temporalInstance;
+        /* Creating a proxy object for my service class*/
+        ClassLoader classLoader = temporalInstance.getClass().getClassLoader();
+        Class<?>[] interfaces = temporalInstance.getClass().getInterfaces();
+        return (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(temporalInstance));
+//        return temporalInstance;
     }
 
-    public void parseParamsToGoodsAndCard(String[] args, Check check) {
+    public int getNeededOffset(Integer pageSize, Integer pageNumber) {
+        return pageSize * pageNumber - pageSize;
+    }
+
+    public String[] getArgArrayFromRequestParameters(Enumeration<String> parameterNames, Map<String, String[]> parameterMap) {
+        List<String> methodArgs = new ArrayList<>();
+        while (parameterNames.hasMoreElements()) {
+            String s = parameterNames.nextElement();
+            StringBuilder builder = new StringBuilder();
+            if (s.contains("id")) {
+                String[] id = parameterMap.get(s);
+                if (!"".equals(id[0])) {
+                    builder.append(id[0]).append("-");
+                }
+                if (parameterNames.hasMoreElements()) {
+                    s = parameterNames.nextElement();
+                    if (s.contains("quantity")) {
+                        String[] quantity = parameterMap.get(s);
+                        for (String s2 : quantity) {
+                            if (!"".equals(s2)) {
+                                builder.append(s2);
+                            }
+                        }
+                    }
+                }
+            } else if (s.contains("discount")) {
+                String[] discount = parameterMap.get(s);
+                builder.append("card-").append(discount[0]);
+            }
+            if (!"".equals(builder.toString())) {
+                methodArgs.add(builder.toString());
+            }
+        }
+        return methodArgs.toArray(new String[0]);
+    }
+
+    public void printToPDF(List<String> list) {
+        Document document = new Document();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(FILE_PATH));
+            Font font = new Font();
+            Rectangle a5 = PageSize.A5;
+            font.setFamily("Courier");
+            document.setPageSize(a5);
+            document.open();
+            for (String s : list) {
+                document.add(new Paragraph(s, font));
+            }
+        } catch (DocumentException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            document.close();
+        }
+    }
+
+    public Check getGoodsAndCard(String[] args) {
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
-            String temp1 = arg.replace(",", "");
-            char[] c = temp1.toCharArray();
+            String temp = arg.replace(", ", "");
+            char[] c = temp.toCharArray();
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
-                tempList.add(temp1);
-            } else if ((c[0] != 0) && ((c[0] == 'c') && Cards.isSuchCard(temp1))) {
-                tempCard = arg.replace("card-", "");
+                tempList.add(temp);
             } else {
-                System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                try {
+                    if ((c[0] != 0) && ((c[0] == 'c') && DISCOUNT_CARD_DAO.findByName(temp).isPresent())) {
+                        tempCard = arg.replace("card-", "");
+                    } else {
+                        System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
-        check.setDiscountCard(tempCard);
-        check.setCheckItemsList(setParamMapper(tempList, "-"));
+        return new Check(tempCard, setProductsAndQuantityToCheckItemList(tempList, "-"));
     }
 
-    public void checkData(String[] strings, String invalidDataFilePath, Check check) {
+    public Check checkProductsWithRegexAndWriteInvalidToFile(String[] strings, String invalidDataFilePath) {
         List<String> params = new ArrayList<>();
+        Check check = new Check();
         try (FileWriter fileWriter = new FileWriter(invalidDataFilePath, false)) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String s : strings) {
-                if (isValid(s)) {
+                if (RegexValidator.isValid(s)) {
                     params.add(s);
                 } else {
                     stringBuilder.append(s).append("\n");
                 }
             }
             fileWriter.write(stringBuilder.toString());
-            check.setCheckItemsList(setParamMapper(params, ";"));
+            List<CheckItem> checkItems = setProductsAndQuantityToCheckItemList(params, ";");
+            check.setCheckItemList(checkItems);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-    }
-
-    public boolean isValid(String productString) {
-        String regex = "^(100|[1-9]\\d?);([A-Z][a-z]{2,29}|[À-ß¨][à-ÿ¸]{2,29});(100\\.00|[1-9]\\d?\\.\\d{2});(20|1\\d|[1-9])$";
-        return productString.matches(regex);
+        return check;
     }
 
     public List<String> createList(Check check) {
@@ -77,23 +150,23 @@ public class CheckServiceImpl implements CheckService {
         int discountProductsCounter = 0;
         double fiveProductDiscount;
         double fiveProductsTotalDiscount = 0;
-        double discountCardDiscount = check.getDiscountCard().equals("") ? 0 : 0.15;
+        double discountCardDiscount = "".equals(check.getDiscountCard()) ? 0 : 0.15;
         double total;
         double totalDiscount;
         double totalPrice = 0;
         double finalPrice;
         List<String> stringsToPrint = new ArrayList<>();
 
-        for (CheckItem pM : check.getCheckItemsList()) {
+        for (CheckItem pM : check.getCheckItemList()) {
             id = pM.getId();
             quantity = pM.getQuantity();
 
             try {
-                if (Products.isDiscount(id)) {
+                if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
                     discountProductsCounter += quantity;
                 }
-            } catch (WrongIdException e) {
-                System.out.println("!!! It seems like id=" + id + " is wrong !!!");
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 
@@ -105,29 +178,38 @@ public class CheckServiceImpl implements CheckService {
         stringsToPrint.add("--------------------------------------");
         stringsToPrint.add("QTY DESCRIPTION         PRICE   TOTAL");
 
-        for (CheckItem pM : check.getCheckItemsList()) {
+        for (CheckItem pM : check.getCheckItemList()) {
             fiveProductDiscount = 0;
             id = pM.getId();
 
             try {
-                description = Products.getDescriptionById(pM.getId());
-                price = Products.getPriceById(pM.getId());
-                quantity = pM.getQuantity();
-                if (discountProductsCounter > 5) {
-                    fiveProductDiscount = 0.2;
-                }
-                if (Products.isDiscount(id)) {
-                    double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
-                    fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
-                    total = price * quantity - fiveProductsCurrentDiscount;
-                } else {
-                    total = price * quantity;
-                }
-                totalPrice += total;
 
-                stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
-            } catch (WrongIdException ignored) {
+                if (DAO.findById(pM.getId()).isPresent()) {
+//                description = DAO.getNameById(pM.getId());
+                    description = DAO.findById(pM.getId()).get().getTitle();
+//                price = DAO.getPriceById(pM.getId());
+                    price = DAO.findById(pM.getId()).get().getPrice();
+                    quantity = pM.getQuantity();
+                    if (discountProductsCounter > 5) {
+                        fiveProductDiscount = 0.2;
+                    }
+                    if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
+                        double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
+                        fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
+                        total = price * quantity - fiveProductsCurrentDiscount;
+                    } else {
+                        total = price * quantity;
+                    }
+                    totalPrice += total;
+
+                    stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
+                }
+
+
+            } catch (SQLException sqlException) {
+                sqlException.printStackTrace();
             }
+
         }
         totalDiscount = totalPrice * discountCardDiscount;
         finalPrice = totalPrice - totalDiscount;
@@ -142,12 +224,12 @@ public class CheckServiceImpl implements CheckService {
         return stringsToPrint;
     }
 
-    public String convertPathStringToTextString(String path, String delimiter) throws IOException {
+    public String[] getProductArrayFromFile(String path, String delimiter, String regex) throws IOException {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
             sb.append(reader.lines().collect(Collectors.joining(delimiter)));
         }
-        return sb.toString();
+        return sb.toString().split(regex);
     }
 
     public void printToFile(Check check, String path) {
@@ -162,7 +244,7 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    public List<CheckItem> setParamMapper(List<String> params, String regex) {
+    public List<CheckItem> setProductsAndQuantityToCheckItemList(List<String> params, String regex) {
         List<CheckItem> checkItems = new ArrayList<>();
         for (String line : params) {
             CheckItem checkItem = new CheckItem();
@@ -193,14 +275,6 @@ public class CheckServiceImpl implements CheckService {
         return checkItems;
     }
 
-    public List<String> printToStringList(Check check) {
-        return createList(check);
-    }
-
-    public String[] convertStringToArray(String text, String regex) {
-        return text.split(regex);
-    }
-
     public void printToConsoleFromFile(Check check) {
         System.out.println("--------------------------------------");
         System.out.println("            CASH RECEIPT");
@@ -210,17 +284,15 @@ public class CheckServiceImpl implements CheckService {
         System.out.println("--------------------------------------");
         System.out.println("QTY DESCRIPTION         PRICE   TOTAL");
         double finalPrice = 0;
-        for (CheckItem pM : check.getCheckItemsList()) {
-            try {
-                String description = pM.getName();
-                int quantity = pM.getQuantity();
-                double price = pM.getPrice();
-                double total = quantity * price;
-                finalPrice += total;
+        for (CheckItem pM : check.getCheckItemList()) {
 
-                System.out.printf("%2d  %-17s %7.2f  %6.2f%n", quantity, description, price, total);
-            } catch (WrongIdException ignored) {
-            }
+            String description = pM.getName();
+            int quantity = pM.getQuantity();
+            double price = pM.getPrice();
+            double total = quantity * price;
+            finalPrice += total;
+
+            System.out.printf("%2d  %-17s %7.2f  %6.2f%n", quantity, description, price, total);
         }
         System.out.println("--------------------------------------");
         System.out.printf("TOTAL %31.2f%n", finalPrice);

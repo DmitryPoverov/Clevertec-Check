@@ -1,37 +1,28 @@
 package ru.clevertec.console;
 
-import ru.clevertec.console.proxy.ServiceHandler;
-import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.check.Check;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 
 public class CheckRunner {
 
+    private static final String IDENT = "\n";
+
     public static void main(String[] args) throws IOException {
 
-        CheckService checkService;
-        CheckService tempService = CheckServiceImpl.getInstance();
-        ClassLoader classLoader = tempService.getClass().getClassLoader();
-        Class<?>[] interfaces = tempService.getClass().getInterfaces();
-        checkService = (CheckService) Proxy.newProxyInstance(classLoader, interfaces, new ServiceHandler(tempService));
-
-        if (args[0].equals("--f")) {
+        if (args[0].equals("--f")) {                                        // for 1.txt {13-1, 8-3, 9-4, ...}
             String path = args[1];
-            Check check = new Check(checkService, path);
-            check.getCheckService().printToFile(check, args[2]);
-            System.out.println("File is written");
-        } else if (args[0].equals("--s")) {
-            Check check = new Check(checkService);
+            Check check = new Check(path);
+            CheckServiceImpl.getInstance().printToFile(check, args[2]);
+        } else if (args[0].equals("--s")) {                                 // for inputData.txt {28;Apple;1.12;2\n...}
             String path = args[1];
-            String contentOfFile = check.getCheckService().convertPathStringToTextString(path, "\r\n");
-            String[] inputStrings = check.getCheckService().convertStringToArray(contentOfFile, "\r\n");
-            check.getCheckService().checkData(inputStrings, args[2], check);
-            check.getCheckService().printToConsoleFromFile(check);
-        } else {
-            Check check = new Check(checkService, args);
-            for (String s : check.getCheckService().printToStringList(check)) {
+            String[] productArray = CheckServiceImpl.getInstance().getProductArrayFromFile(path, IDENT, IDENT);
+            Check check = CheckServiceImpl.getInstance().checkProductsWithRegexAndWriteInvalidToFile(productArray, args[2]);
+            CheckServiceImpl.getInstance().printToConsoleFromFile(check);
+        } else {                                                            // for console {1-2 2-2 3-3...}
+            Check check = new Check(args);
+            for (String s : CheckServiceImpl.getInstance().createList(check)) {
                 System.out.println(s);
             }
         }
