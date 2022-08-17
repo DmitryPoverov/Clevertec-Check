@@ -48,8 +48,4 @@ public class PropertyManager {
     public static String getPassword() {
         return PROPERTIES.getProperty(PASSWORD);
     }
-
-    public static String getDriver() {
-        return PROPERTIES.getProperty(DRIVER);
-    }
 }

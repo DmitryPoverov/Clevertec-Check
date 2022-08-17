@@ -30,7 +30,9 @@ public class Check {
     }
     public Check(String path) throws IOException {
         String[] productArray = CheckServiceImpl.getInstance().getProductArrayFromFile(path, DELIMITER, REGEX);
-        CheckServiceImpl.getInstance().getGoodsAndCard(productArray);
+        Check goodsAndCard = CheckServiceImpl.getInstance().getGoodsAndCard(productArray);
+        discountCard = goodsAndCard.getDiscountCard();
+        checkItemList = goodsAndCard.getCheckItemList();
     }
 
     @Override
