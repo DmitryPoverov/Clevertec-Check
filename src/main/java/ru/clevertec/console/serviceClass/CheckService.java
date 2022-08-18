@@ -1,7 +1,7 @@
 package ru.clevertec.console.serviceClass;
 
 import ru.clevertec.console.check.Check;
-import ru.clevertec.console.serviceClass.entities.Product;
+import ru.clevertec.console.entities.Product;
 
 import java.io.IOException;
 import java.util.Enumeration;

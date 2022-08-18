@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
-import ru.clevertec.console.serviceClass.entities.DiscountCard;
+import ru.clevertec.console.entities.DiscountCard;
 
 import java.sql.SQLException;
 import java.util.Arrays;

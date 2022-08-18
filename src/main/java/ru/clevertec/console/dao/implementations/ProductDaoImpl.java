@@ -1,7 +1,7 @@
 package ru.clevertec.console.dao.implementations;
 
 import ru.clevertec.console.dao.daoInterface.ProductDao;
-import ru.clevertec.console.serviceClass.entities.Product;
+import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.serviceClass.CheckService;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.utils.ConnectionManager;

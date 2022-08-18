@@ -7,8 +7,8 @@ import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
 import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.serviceClass.entities.DiscountCard;
-import ru.clevertec.console.serviceClass.entities.Product;
+import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;

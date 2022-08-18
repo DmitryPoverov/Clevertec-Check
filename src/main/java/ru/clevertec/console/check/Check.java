@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.clevertec.console.serviceClass.entities.Product;
+import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 
 import java.io.IOException;
