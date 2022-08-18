@@ -7,9 +7,8 @@ import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
 import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.entities.CheckItem;
-import ru.clevertec.console.entities.DiscountCard;
-import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.serviceClass.entities.DiscountCard;
+import ru.clevertec.console.serviceClass.entities.Product;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.*;
@@ -106,7 +105,7 @@ public class CheckServiceImpl implements CheckService {
                 tempList.add(temp);
             } else {
                 try {
-                    if ((c[0] != 0) && ((c[0] == 'c') && DISCOUNT_CARD_DAO.findByName(temp).isPresent())) {
+                    if ((c[0] != 0) && (('c' == c[0]) && DISCOUNT_CARD_DAO.findByName(temp).isPresent())) {
                         tempCard = arg.replace("card-", "");
                     } else {
                         System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
@@ -116,24 +115,25 @@ public class CheckServiceImpl implements CheckService {
                 }
             }
         }
-        return new Check(tempCard, setProductsAndQuantityToCheckItemList(tempList, "-"));
+        Map<Product, Integer> productsAndQuantitiesMap = setProductsAndQuantityToMap(tempList, "-");
+        return new Check(tempCard, productsAndQuantitiesMap);
     }
 
     public Check checkProductsWithRegexAndWriteInvalidToFile(String[] strings, String invalidDataFilePath) {
-        List<String> params = new ArrayList<>();
+        List<String> tempList = new ArrayList<>();
         Check check = new Check();
         try (FileWriter fileWriter = new FileWriter(invalidDataFilePath, false)) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String s : strings) {
                 if (RegexValidator.isValid(s)) {
-                    params.add(s);
+                    tempList.add(s);
                 } else {
                     stringBuilder.append(s).append("\n");
                 }
             }
             fileWriter.write(stringBuilder.toString());
-            List<CheckItem> checkItems = setProductsAndQuantityToCheckItemList(params, ";");
-            check.setCheckItemList(checkItems);
+            Map<Product, Integer> productsAndQuantitiesMap = setProductsAndQuantityToMap(tempList, ";");
+            check.setCheckItemMap(productsAndQuantitiesMap);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -155,9 +155,9 @@ public class CheckServiceImpl implements CheckService {
         double finalPrice;
         List<String> stringsToPrint = new ArrayList<>();
 
-        for (CheckItem checkItem : check.getCheckItemList()) {
-            id = checkItem.getId();
-            quantity = checkItem.getQuantity();
+        for (Product product : check.getCheckItemMap().keySet()) {
+            id = product.getId();
+            quantity = check.getCheckItemMap().get(product);
 
             try {
                 if (DAO.findById(id).isPresent() && DAO.findById(id).get().isDiscount()) {
@@ -176,18 +176,14 @@ public class CheckServiceImpl implements CheckService {
         stringsToPrint.add("--------------------------------------");
         stringsToPrint.add("QTY DESCRIPTION         PRICE   TOTAL");
 
-        for (CheckItem checkItem : check.getCheckItemList()) {
+        for (Product checkItem : check.getCheckItemMap().keySet()) {
             fiveProductDiscount = 0;
             id = checkItem.getId();
-
             try {
-
                 if (DAO.findById(checkItem.getId()).isPresent()) {
-//                description = DAO.getNameById(checkItem.getId());
                     description = DAO.findById(checkItem.getId()).get().getTitle();
-//                price = DAO.getPriceById(checkItem.getId());
                     price = DAO.findById(checkItem.getId()).get().getPrice();
-                    quantity = checkItem.getQuantity();
+                    quantity = check.getCheckItemMap().get(checkItem);
                     if (discountProductsCounter > 5) {
                         fiveProductDiscount = 0.2;
                     }
@@ -242,35 +238,39 @@ public class CheckServiceImpl implements CheckService {
         }
     }
 
-    public List<CheckItem> setProductsAndQuantityToCheckItemList(List<String> params, String regex) {
-        List<CheckItem> checkItems = new ArrayList<>();
+    @Override
+    public Map<Product, Integer> setProductsAndQuantityToMap(List<String> params, String regex) {
+        Map<Product, Integer> productMap = new LinkedHashMap<>();
+        Product product = Product.builder().build();
+        int quantity = 0;
         for (String line : params) {
-            CheckItem checkItem = new CheckItem();
             String[] paramsOfItem = line.split(regex);
             if (paramsOfItem.length == 2) {
                 for (int i = 0; i < paramsOfItem.length; i++) {
                     if (i == 0) {
-                        checkItem.setId(Integer.parseInt(paramsOfItem[i]));
+                        product.setId(Integer.parseInt(paramsOfItem[i]));
                     } else {
-                        checkItem.setQuantity(Integer.parseInt(paramsOfItem[i]));
+                        quantity = Integer.parseInt(paramsOfItem[i]);
                     }
                 }
             } else if (paramsOfItem.length == 4) {
                 for (int i = 0; i < paramsOfItem.length; i++) {
                     if (i == 0) {
-                        checkItem.setId(Integer.parseInt(paramsOfItem[i]));
+                        product.setId(Integer.parseInt(paramsOfItem[i]));
                     } else if (i == 1) {
-                        checkItem.setTitle(paramsOfItem[i]);
+                        product.setTitle(paramsOfItem[i]);
                     } else if (i == 2) {
-                        checkItem.setPrice(Double.parseDouble(paramsOfItem[i]));
+                        product.setPrice(Double.parseDouble(paramsOfItem[i]));
                     } else {
-                        checkItem.setQuantity(Integer.parseInt(paramsOfItem[i]));
+                        quantity = Integer.parseInt(paramsOfItem[i]);
                     }
                 }
             }
-            checkItems.add(checkItem);
+            productMap.put(product, quantity);
+            product = Product.builder().build();
+            quantity = 0;
         }
-        return checkItems;
+        return productMap;
     }
 
     public void printToConsoleFromFile(Check check) {
@@ -282,11 +282,11 @@ public class CheckServiceImpl implements CheckService {
         System.out.println("--------------------------------------");
         System.out.println("QTY DESCRIPTION         PRICE   TOTAL");
         double finalPrice = 0;
-        for (CheckItem checkItem : check.getCheckItemList()) {
+        for (Product product : check.getCheckItemMap().keySet()) {
 
-            String description = checkItem.getTitle();
-            int quantity = checkItem.getQuantity();
-            double price = checkItem.getPrice();
+            String description = product.getTitle();
+            int quantity = check.getCheckItemMap().get(product);
+            double price = product.getPrice();
             double total = quantity * price;
             finalPrice += total;
 

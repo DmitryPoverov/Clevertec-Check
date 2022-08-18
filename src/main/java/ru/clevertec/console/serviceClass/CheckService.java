@@ -1,7 +1,7 @@
 package ru.clevertec.console.serviceClass;
 
 import ru.clevertec.console.check.Check;
-import ru.clevertec.console.entities.CheckItem;
+import ru.clevertec.console.serviceClass.entities.Product;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -26,7 +26,7 @@ public interface CheckService {
 
     String[] getProductArrayFromFile(String path, String delimiter, String regex) throws IOException;
 
-    List<CheckItem> setProductsAndQuantityToCheckItemList(List<String> params, String regex);
+    Map<Product, Integer> setProductsAndQuantityToMap(List<String> params, String regex);
 
     void printToConsoleFromFile(Check check);
 }

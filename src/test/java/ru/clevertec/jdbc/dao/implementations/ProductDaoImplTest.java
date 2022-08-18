@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.serviceClass.entities.Product;
 import ru.clevertec.flywayClasses.FlywayCreator;
 
 import java.sql.SQLException;

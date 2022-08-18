@@ -1,4 +1,4 @@
-package ru.clevertec.console.entities;
+package ru.clevertec.console.serviceClass.entities;
 
 import lombok.*;
 

@@ -8,13 +8,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.clevertec.console.check.Check;
-import ru.clevertec.console.entities.CheckItem;
+import ru.clevertec.console.serviceClass.entities.Product;
 import ru.clevertec.console.serviceClass.CheckServiceImpl;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -23,15 +24,9 @@ public class CheckTest {
     private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
     private static final Check CHECK_2 = new Check(ARGS);
     private static final String DISCOUNT_CARD_EXPECTED = "123";
-    private static final CheckItem PM11 = new CheckItem(1, 2);
-    private static final CheckItem PM12 = new CheckItem(2, 2);
-    private static final CheckItem PM21 = new CheckItem(28, "Apple", 1.12, 2);
-    private static final CheckItem PM22 = new CheckItem(30, "Watermelon", 2.45, 4);
-    private static final CheckItem PM23 = new CheckItem(26, "Cherry", 3.18, 6);
-    private static final CheckItem PM24 = new CheckItem(39, "Strawberry", 5.2, 8);
-    private static final CheckItem PM25 = new CheckItem(35, "Nectarine", 3.17, 9);
-    private static final List<CheckItem> LIST_PM_EXPECTED1 = Arrays.asList(PM11, PM12);
-    private static final List<CheckItem> LIST_PM_EXPECTED2 = Arrays.asList(PM21, PM22, PM23, PM24, PM25);
+    private static final Map<Product, Integer> MAP_EXPECTED1 = new LinkedHashMap<>();
+    private static final Map<Product, Integer> MAP_EXPECTED2 = new LinkedHashMap<>();
+
     private static final String[] EXPECTED_CONTENT = {
             "28;Apple;1.12;2",
             "30;Watermelon;2.45;4",
@@ -104,9 +99,11 @@ public class CheckTest {
 
     @Test
     void testShouldParseParamsToGoodsAndCard() {
+        MAP_EXPECTED1.put(Product.builder().id(1).build(), 2);
+        MAP_EXPECTED1.put(Product.builder().id(2).build(), 2);
         String discountCardActual = CHECK_2.getDiscountCard();
         Assertions.assertEquals(DISCOUNT_CARD_EXPECTED, discountCardActual);
-        Assertions.assertEquals(LIST_PM_EXPECTED1, CHECK_2.getCheckItemList());
+        Assertions.assertEquals(MAP_EXPECTED1, CHECK_2.getCheckItemMap());
     }
 
     @Test
@@ -119,12 +116,16 @@ public class CheckTest {
             System.out.println("! error !");
         }
     }
-
     @Test
     void testShouldCheckData() {
+        MAP_EXPECTED2.put(Product.builder().id(28).title("Apple").price(1.12).build(), 2);
+        MAP_EXPECTED2.put(Product.builder().id(30).title("Watermelon").price(2.45).build(), 4);
+        MAP_EXPECTED2.put(Product.builder().id(26).title("Cherry").price(3.18).build(), 6);
+        MAP_EXPECTED2.put(Product.builder().id(39).title("Strawberry").price(5.2).build(), 8);
+        MAP_EXPECTED2.put(Product.builder().id(35).title("Nectarine").price(3.17).build(), 9);
         Check check = CheckServiceImpl.getInstance()
                 .checkProductsWithRegexAndWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
-        List<CheckItem> checkItemList = check.getCheckItemList();
-        Assertions.assertEquals(LIST_PM_EXPECTED2, checkItemList);
+        Map<Product, Integer> actualMap = check.getCheckItemMap();
+        Assertions.assertEquals(MAP_EXPECTED2, actualMap);
     }
 }
