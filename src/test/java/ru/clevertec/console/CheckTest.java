@@ -1,6 +1,5 @@
 package ru.clevertec.console;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -22,11 +21,10 @@ import java.util.stream.Stream;
 public class CheckTest {
 
     private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
-    private static final Check CHECK_2 = new Check(ARGS);
-    private static final String DISCOUNT_CARD_EXPECTED = "123";
-    private static final Map<Product, Integer> MAP_EXPECTED1 = new LinkedHashMap<>();
-    private static final Map<Product, Integer> MAP_EXPECTED2 = new LinkedHashMap<>();
-
+    private static final Check EXPECTED_CHECK = new Check(ARGS);
+    private static final String EXPECTED_DISCOUNT_CARD = "123";
+    private static final Map<Product, Integer> EXPECTED_MAP1 = new LinkedHashMap<>();
+    private static final Map<Product, Integer> EXPECTED_MAP2 = new LinkedHashMap<>();
     private static final String[] EXPECTED_CONTENT = {
             "28;Apple;1.12;2",
             "30;Watermelon;2.45;4",
@@ -39,7 +37,7 @@ public class CheckTest {
             "28;MyApple;1.12;2",
             "28;Apple;2.001;2",
             "28;Apple;1.12;50"};
-    private static final String EXPECTED = """
+    private static final String EXPECTED_STRINGS = """
             --------------------------------------
                         CASH RECEIPT
                         Supermarket
@@ -76,7 +74,7 @@ public class CheckTest {
             }
         }
         //then
-        Assertions.assertEquals(EXPECTED, actual.toString());
+        Assertions.assertEquals(EXPECTED_STRINGS, actual.toString());
     }
 
     Stream<String> generateCorrectProductList() {
@@ -98,12 +96,18 @@ public class CheckTest {
     }
 
     @Test
-    void testShouldParseParamsToGoodsAndCard() {
-        MAP_EXPECTED1.put(Product.builder().id(1).build(), 2);
-        MAP_EXPECTED1.put(Product.builder().id(2).build(), 2);
-        String discountCardActual = CHECK_2.getDiscountCard();
-        Assertions.assertEquals(DISCOUNT_CARD_EXPECTED, discountCardActual);
-        Assertions.assertEquals(MAP_EXPECTED1, CHECK_2.getCheckItemMap());
+    void testShouldParseParamsToCard() {
+        String discountCardActual = EXPECTED_CHECK.getDiscountCard();
+        Assertions.assertEquals(EXPECTED_DISCOUNT_CARD, discountCardActual);
+    }
+
+    @Test
+    void testShouldParseParamsToGoods() {
+        EXPECTED_MAP1.put(Product.builder().id(1).build(), 2);
+        EXPECTED_MAP1.put(Product.builder().id(2).build(), 2);
+
+        Map<Product, Integer> actualMap = EXPECTED_CHECK.getCheckItemMap();
+        Assertions.assertEquals(EXPECTED_MAP1, actualMap);
     }
 
     @Test
@@ -116,16 +120,17 @@ public class CheckTest {
             System.out.println("! error !");
         }
     }
+
     @Test
     void testShouldCheckData() {
-        MAP_EXPECTED2.put(Product.builder().id(28).title("Apple").price(1.12).build(), 2);
-        MAP_EXPECTED2.put(Product.builder().id(30).title("Watermelon").price(2.45).build(), 4);
-        MAP_EXPECTED2.put(Product.builder().id(26).title("Cherry").price(3.18).build(), 6);
-        MAP_EXPECTED2.put(Product.builder().id(39).title("Strawberry").price(5.2).build(), 8);
-        MAP_EXPECTED2.put(Product.builder().id(35).title("Nectarine").price(3.17).build(), 9);
+        EXPECTED_MAP2.put(Product.builder().id(28).title("Apple").price(1.12).build(), 2);
+        EXPECTED_MAP2.put(Product.builder().id(30).title("Watermelon").price(2.45).build(), 4);
+        EXPECTED_MAP2.put(Product.builder().id(26).title("Cherry").price(3.18).build(), 6);
+        EXPECTED_MAP2.put(Product.builder().id(39).title("Strawberry").price(5.2).build(), 8);
+        EXPECTED_MAP2.put(Product.builder().id(35).title("Nectarine").price(3.17).build(), 9);
         Check check = CheckServiceImpl.getInstance()
                 .checkProductsWithRegexAndWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
         Map<Product, Integer> actualMap = check.getCheckItemMap();
-        Assertions.assertEquals(MAP_EXPECTED2, actualMap);
+        Assertions.assertEquals(EXPECTED_MAP2, actualMap);
     }
 }

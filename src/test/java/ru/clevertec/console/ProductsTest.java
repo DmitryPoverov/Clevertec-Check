@@ -1,6 +1,5 @@
 package ru.clevertec.console;
 
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.console.enums.Products;
@@ -48,6 +47,7 @@ public class ProductsTest {
     void testIsDiscountShouldReturnTrue() {
         Assertions.assertTrue(Products.isDiscount(CORRECT_ID));
     }
+
     @Test
     void testIsDiscountShouldReturnFalse() {
         Assertions.assertTrue(Products.isDiscount(CORRECT_ID));
