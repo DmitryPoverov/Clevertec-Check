@@ -23,6 +23,11 @@ public class CheckTest {
     private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
     private static final Check EXPECTED_CHECK = new Check(ARGS);
     private static final String EXPECTED_DISCOUNT_CARD = "123";
+    private static final Product PRODUCT1 = Product.builder().id(28).title("Apple").price(1.12).build();
+    private static final Product PRODUCT2 = Product.builder().id(30).title("Watermelon").price(2.45).build();
+    private static final Product PRODUCT3 = Product.builder().id(26).title("Cherry").price(3.18).build();
+    private static final Product PRODUCT4 = Product.builder().id(39).title("Strawberry").price(5.2).build();
+    private static final Product PRODUCT5 = Product.builder().id(35).title("Nectarine").price(3.17).build();
     private static final Map<Product, Integer> EXPECTED_MAP1 = new LinkedHashMap<>();
     private static final Map<Product, Integer> EXPECTED_MAP2 = new LinkedHashMap<>();
     private static final String[] EXPECTED_CONTENT = {
@@ -105,7 +110,6 @@ public class CheckTest {
     void testShouldParseParamsToGoods() {
         EXPECTED_MAP1.put(Product.builder().id(1).build(), 2);
         EXPECTED_MAP1.put(Product.builder().id(2).build(), 2);
-
         Map<Product, Integer> actualMap = EXPECTED_CHECK.getCheckItemMap();
         Assertions.assertEquals(EXPECTED_MAP1, actualMap);
     }
@@ -123,11 +127,11 @@ public class CheckTest {
 
     @Test
     void testShouldCheckData() {
-        EXPECTED_MAP2.put(Product.builder().id(28).title("Apple").price(1.12).build(), 2);
-        EXPECTED_MAP2.put(Product.builder().id(30).title("Watermelon").price(2.45).build(), 4);
-        EXPECTED_MAP2.put(Product.builder().id(26).title("Cherry").price(3.18).build(), 6);
-        EXPECTED_MAP2.put(Product.builder().id(39).title("Strawberry").price(5.2).build(), 8);
-        EXPECTED_MAP2.put(Product.builder().id(35).title("Nectarine").price(3.17).build(), 9);
+        EXPECTED_MAP2.put(PRODUCT1, 2);
+        EXPECTED_MAP2.put(PRODUCT2, 4);
+        EXPECTED_MAP2.put(PRODUCT3, 6);
+        EXPECTED_MAP2.put(PRODUCT4, 8);
+        EXPECTED_MAP2.put(PRODUCT5, 9);
         Check check = CheckServiceImpl.getInstance()
                 .checkProductsWithRegexAndWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
         Map<Product, Integer> actualMap = check.getCheckItemMap();
