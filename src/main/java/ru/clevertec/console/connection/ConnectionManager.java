@@ -1,4 +1,4 @@
-package ru.clevertec.console.utils;
+package ru.clevertec.console.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

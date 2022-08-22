@@ -1,14 +1,12 @@
-package ru.clevertec.console.dao.daoInterface;
+package ru.clevertec.console.service.interfaces;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductDao<K,T> {
+public interface ProductService<K, T> {
 
     List<T> findAll(K pageSize, K pageNumber) throws SQLException;
-
-    K countAllRows() throws SQLException;
 
     Optional<T> findById(K id) throws SQLException;
 

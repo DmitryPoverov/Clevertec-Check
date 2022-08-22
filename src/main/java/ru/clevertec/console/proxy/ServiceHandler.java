@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.clevertec.console.check.Check;
-import ru.clevertec.console.serviceClass.CheckService;
+import ru.clevertec.console.entities.Check;
+import ru.clevertec.console.service.interfaces.CheckService;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,9 +16,9 @@ import java.util.Arrays;
 public class ServiceHandler implements InvocationHandler {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final CheckService checkService;
+    private final CheckService<String, Check> checkService;
 
-    public ServiceHandler(CheckService checkService) {
+    public ServiceHandler(CheckService<String, Check> checkService) {
         this.checkService = checkService;
     }
 
@@ -38,9 +38,7 @@ public class ServiceHandler implements InvocationHandler {
                 }
             });
         }
-        if ("printToConsoleFromFile".equals(method.getName()) ||
-//                "createList".equals(method.getName()) ||
-                "printToFile".equals(method.getName())) {
+        if ("getGoodsAndCard".equals(method.getName())) {
             File file = new File("src/main/resources/checkFile.json");
             try (FileWriter writer = new FileWriter(file, false)) {
                 if (args != null && args[0] != null) {

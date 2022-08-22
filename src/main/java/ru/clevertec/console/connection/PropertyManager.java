@@ -1,4 +1,4 @@
-package ru.clevertec.console.utils;
+package ru.clevertec.console.connection;
 
 import java.io.IOException;
 import java.io.InputStream;

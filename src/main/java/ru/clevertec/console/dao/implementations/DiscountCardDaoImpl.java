@@ -1,11 +1,11 @@
 package ru.clevertec.console.dao.implementations;
 
+import org.springframework.stereotype.Component;
+import ru.clevertec.console.utils.DaoUtility;
 import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.entities.DiscountCard;
-import ru.clevertec.console.serviceClass.CheckService;
-import ru.clevertec.console.serviceClass.CheckServiceImpl;
-import ru.clevertec.console.utils.ConnectionManager;
-import ru.clevertec.console.utils.ProxyConnection;
+import ru.clevertec.console.connection.ConnectionManager;
+import ru.clevertec.console.connection.ProxyConnection;
 import ru.clevertec.console.validators.PageValidator;
 
 import java.sql.*;
@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCard> {
 
-    private static final DiscountCardDao<Integer, DiscountCard> INSTANCE = new DiscountCardDaoImpl();
-    private static final CheckService SERVICE = CheckServiceImpl.getInstance();
     private static final String FIND_ALL = """
             SELECT id, number
             FROM check_discount_card
@@ -52,12 +51,6 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
             FROM check_discount_card
             """;
 
-    private DiscountCardDaoImpl() {}
-
-    public static DiscountCardDao<Integer, DiscountCard> getInstance() {
-        return INSTANCE;
-    }
-
     @Override
     public List<DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
@@ -69,7 +62,8 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
         pageSize = PageValidator.checkAndReturnCardPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
         maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
-        neededOffset = SERVICE.getNeededOffset(pageSize, pageNumber);
+// TODO: сделал DaoUtility
+        neededOffset = DaoUtility.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {

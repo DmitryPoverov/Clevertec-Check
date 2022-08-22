@@ -36,7 +36,7 @@ public class ProductDaoImplTest {
             Product.builder().id(1).title("Dress1_db").price(10.11).discount(false).build(),
             Product.builder().id(2).title("Pants1_db").price(10.22).discount(false).build(),
             Product.builder().id(3).title("Boots1_db").price(25.33).discount(true).build());
-    private static final ProductDao<Integer, Product> DAO = ProductDaoImpl.getInstance();
+    private static final ProductDao<Integer, Product> DAO = new ProductDaoImpl();
     private static final int CORRECT_ID = 1;
     private static final int ZERO = 0;
     private static final int ONE = 1;
@@ -73,12 +73,6 @@ public class ProductDaoImplTest {
     void testShouldReturnProductByName() throws SQLException {
         Optional<Product> actualProduct = DAO.findByName(CORRECT_ID_NAME);
         actualProduct.ifPresent(product -> Assertions.assertEquals(EXPECTED_PRODUCT, product));
-    }
-
-    @Test
-    void testShouldReturnNameById() throws SQLException {
-        String nameById = DAO.getNameById(CORRECT_ID);
-        Assertions.assertEquals(CORRECT_ID_NAME, nameById);
     }
 
     @Test

@@ -1,11 +1,11 @@
 package ru.clevertec.console.dao.implementations;
 
+import org.springframework.stereotype.Component;
+import ru.clevertec.console.utils.DaoUtility;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.serviceClass.CheckService;
-import ru.clevertec.console.serviceClass.CheckServiceImpl;
-import ru.clevertec.console.utils.ConnectionManager;
-import ru.clevertec.console.utils.ProxyConnection;
+import ru.clevertec.console.connection.ConnectionManager;
+import ru.clevertec.console.connection.ProxyConnection;
 import ru.clevertec.console.validators.PageValidator;
 
 import java.sql.*;
@@ -13,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class ProductDaoImpl implements ProductDao<Integer, Product> {
 
-    private static final ProductDao<Integer, Product> PRODUCT_DAO = new ProductDaoImpl();
-    private static final CheckService SERVICE = CheckServiceImpl.getInstance();
     private static final String FIND_ALL = """
             SELECT id, title, price, discount
             FROM check_products
@@ -52,13 +51,6 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             FROM check_products
             """;
 
-    private ProductDaoImpl() {
-    }
-
-    public static ProductDao<Integer, Product> getInstance() {
-        return PRODUCT_DAO;
-    }
-
     @Override
     public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
 
@@ -70,7 +62,8 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
         pageSize = PageValidator.checkAndReturnProductPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
         maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
-        neededOffset = SERVICE.getNeededOffset(pageSize, pageNumber);
+//TODO перенести этот метод в Абстрактный класс
+        neededOffset = DaoUtility.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
@@ -126,27 +119,6 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             }
         }
         return rows;
-    }
-
-    @Override
-    public String getNameById(Integer id) throws SQLException {
-        try (Connection connection = ConnectionManager.getConnection();
-             PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
-            Product product = Product.builder().build();
-            handleProductResultSet(product, resultSet);
-            return product.getTitle();
-        }
-    }
-
-    private void handleProductResultSet(Product product, ResultSet resultSet) throws SQLException {
-        while (resultSet.next()) {
-            product.setId(resultSet.getInt("id"));
-            product.setTitle(resultSet.getString("title"));
-            product.setPrice(resultSet.getDouble("price"));
-            product.setDiscount(resultSet.getBoolean("discount"));
-        }
     }
 
     private Product handleProductResultSet(ResultSet resultSet) throws SQLException {

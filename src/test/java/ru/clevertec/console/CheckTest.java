@@ -6,9 +6,15 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.clevertec.console.check.Check;
+import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
+import ru.clevertec.console.dao.implementations.ProductDaoImpl;
+import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.serviceClass.CheckServiceImpl;
+import ru.clevertec.console.service.implementations.DiscountCardServiceImpl;
+import ru.clevertec.console.service.implementations.ProductServiceImpl;
+import ru.clevertec.console.service.interfaces.CheckService;
+import ru.clevertec.console.utils.CheckUtil;
+import ru.clevertec.console.service.implementations.CheckServiceImpl;
 import ru.clevertec.console.validators.RegexValidator;
 
 import java.io.IOException;
@@ -20,9 +26,15 @@ import java.util.stream.Stream;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CheckTest {
 
-    private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
-    private static final Check EXPECTED_CHECK = new Check(ARGS);
+    private static final String DELIMITER = "";
+    private static final String REGEX = ", ";
+    private static final String PATH = "testTask/1.txt";
     private static final String EXPECTED_DISCOUNT_CARD = "123";
+    private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
+    private static final CheckService<String, Check> SERVICE = new CheckServiceImpl(
+            new DiscountCardServiceImpl(new DiscountCardDaoImpl()),
+            new ProductServiceImpl(new ProductDaoImpl()));
+    private static final Check EXPECTED_CHECK = SERVICE.getGoodsAndCard(ARGS);
     private static final Product PRODUCT1 = Product.builder().id(28).title("Apple").price(1.12).build();
     private static final Product PRODUCT2 = Product.builder().id(30).title("Watermelon").price(2.45).build();
     private static final Product PRODUCT3 = Product.builder().id(26).title("Cherry").price(3.18).build();
@@ -67,9 +79,10 @@ public class CheckTest {
     @Test
     public void testGetDescriptionByIdShouldReturnId() throws IOException {
         //given
-        Check check = new Check("testTask/1.txt");
+        String[] productArray = CheckUtil.getProductArrayFromFile(PATH, DELIMITER, REGEX);
+        Check check = SERVICE.getGoodsAndCard(productArray);
         //when
-        List<String> stringList = CheckServiceImpl.getInstance().createList(check);
+        List<String> stringList = SERVICE.createList(check);
         StringBuilder actual = new StringBuilder();
         for (int i=0; i<stringList.size(); i++) {
             if (i==4) {
@@ -117,7 +130,7 @@ public class CheckTest {
     @Test
     void testShouldReadPathAndReturnFIleContentAsString() {
         try {
-            String[] actualContent = CheckServiceImpl.getInstance()
+            String[] actualContent = CheckUtil
                     .getProductArrayFromFile("testTask/inputData.txt", "\n", "\n");
             Assertions.assertArrayEquals(EXPECTED_CONTENT, actualContent);
         } catch (IOException e) {
@@ -132,9 +145,8 @@ public class CheckTest {
         EXPECTED_MAP2.put(PRODUCT3, 6);
         EXPECTED_MAP2.put(PRODUCT4, 8);
         EXPECTED_MAP2.put(PRODUCT5, 9);
-        Check check = CheckServiceImpl.getInstance()
-                .checkProductsWithRegexAndWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
-        Map<Product, Integer> actualMap = check.getCheckItemMap();
+        Map<Product, Integer> actualMap = CheckUtil
+                .checkProductsGetMapWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
         Assertions.assertEquals(EXPECTED_MAP2, actualMap);
     }
 }
