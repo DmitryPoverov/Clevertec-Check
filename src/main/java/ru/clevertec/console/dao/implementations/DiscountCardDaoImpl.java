@@ -1,7 +1,7 @@
 package ru.clevertec.console.dao.implementations;
 
 import org.springframework.stereotype.Component;
-import ru.clevertec.console.utils.DaoUtility;
+import ru.clevertec.console.utils.DaoUtil;
 import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.connection.ConnectionManager;
@@ -63,7 +63,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
         maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
 // TODO: сделал DaoUtility
-        neededOffset = DaoUtility.getNeededOffset(pageSize, pageNumber);
+        neededOffset = DaoUtil.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL)) {
