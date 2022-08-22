@@ -17,12 +17,6 @@ public class CheckUtil {
 
     public CheckUtil() {}
 
-/* TODO: this method for runner instead of two
-    public static Map<Product, Integer> getMapFromPath(String path, String delimiter, String regex, String invalidDataFilePath) throws IOException {
-        String[] productArray = getProductArrayFromFile(path, delimiter, regex);
-        return checkProductsWithRegexAndWriteInvalidToFile(productArray, invalidDataFilePath);
-    }*/
-
     public static String[] getProductArrayFromFile(String path, String delimiter, String regex) throws IOException {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
