@@ -62,7 +62,6 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
         pageSize = PageValidator.checkAndReturnProductPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
         maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
-//TODO перенести этот метод в Абстрактный класс
         neededOffset = DaoUtil.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = ConnectionManager.getConnection();

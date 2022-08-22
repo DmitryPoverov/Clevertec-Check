@@ -25,9 +25,17 @@ public class ProductsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String json;
+        String size = req.getParameter("size");
+        String page = req.getParameter("page");
         try {
-            List<Product> products = SERVICE.findAll(5, 1);
-            String json = gson.toJson(products);
+            List<Product> products;
+            if (size != null && page != null) {
+                products = SERVICE.findAll(Integer.parseInt(size), Integer.parseInt(page));
+            } else {
+                products = SERVICE.findAll(5, 1);
+            }
+            json = gson.toJson(products);
             resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();
             writer.write(json);

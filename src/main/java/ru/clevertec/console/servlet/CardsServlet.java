@@ -20,14 +20,21 @@ import java.util.List;
 @WebServlet("/cards")
 public class CardsServlet extends HttpServlet {
 
-    private static DiscountCardService<Integer, DiscountCard> service = new DiscountCardServiceImpl(new DiscountCardDaoImpl());
+    private final DiscountCardService<Integer, DiscountCard> service = new DiscountCardServiceImpl(new DiscountCardDaoImpl());
     private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String json = "";
+        String json;
+        String size = req.getParameter("size");
+        String page = req.getParameter("page");
         try {
-            List<DiscountCard> cards = service.findAll(5, 1);
+            List<DiscountCard> cards;
+            if (size != null && page != null) {
+                cards = service.findAll(Integer.parseInt(size), Integer.parseInt(page));
+            } else {
+                cards = service.findAll(0, 0);
+            }
             json = gson.toJson(cards);
             resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();

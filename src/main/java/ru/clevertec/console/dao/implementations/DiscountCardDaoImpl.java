@@ -62,7 +62,6 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
         pageSize = PageValidator.checkAndReturnCardPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
         maxPageNumber = PageValidator.checkAndReturnMaxPageNumber(pageSize, allRows, maxPageNumber);
-// TODO: сделал DaoUtility
         neededOffset = DaoUtil.getNeededOffset(pageSize, pageNumber);
 
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
