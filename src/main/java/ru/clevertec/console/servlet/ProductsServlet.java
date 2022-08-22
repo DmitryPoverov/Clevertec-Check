@@ -15,24 +15,19 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.List;
 
-@WebServlet("/products/*")
-public class ProductServlet extends HttpServlet {
+@WebServlet("/products")
+public class ProductsServlet extends HttpServlet {
 
     private static final ProductService<Integer, Product> SERVICE = new ProductServiceImpl(new ProductDaoImpl());
     private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String json = "";
         try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Optional<Product> maybeProduct = SERVICE.findById(id);
-            if (maybeProduct.isPresent()) {
-                Product product = maybeProduct.get();
-                json = gson.toJson(product);
-            }
+            List<Product> products = SERVICE.findAll(5, 1);
+            String json = gson.toJson(products);
             resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();
             writer.write(json);

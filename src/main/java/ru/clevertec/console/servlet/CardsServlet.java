@@ -1,10 +1,10 @@
 package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.service.implementations.ProductServiceImpl;
-import ru.clevertec.console.service.interfaces.ProductService;
+import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
+import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.service.implementations.DiscountCardServiceImpl;
+import ru.clevertec.console.service.interfaces.DiscountCardService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,24 +15,20 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.List;
 
-@WebServlet("/products/*")
-public class ProductServlet extends HttpServlet {
+@WebServlet("/cards")
+public class CardsServlet extends HttpServlet {
 
-    private static final ProductService<Integer, Product> SERVICE = new ProductServiceImpl(new ProductDaoImpl());
+    private static DiscountCardService<Integer, DiscountCard> service = new DiscountCardServiceImpl(new DiscountCardDaoImpl());
     private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String json = "";
         try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Optional<Product> maybeProduct = SERVICE.findById(id);
-            if (maybeProduct.isPresent()) {
-                Product product = maybeProduct.get();
-                json = gson.toJson(product);
-            }
+            List<DiscountCard> cards = service.findAll(5, 1);
+            json = gson.toJson(cards);
             resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();
             writer.write(json);

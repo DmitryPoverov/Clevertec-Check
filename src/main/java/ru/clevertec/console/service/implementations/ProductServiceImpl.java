@@ -16,6 +16,8 @@ public class ProductServiceImpl implements ProductService<Integer, Product> {
     @Autowired
     private ProductDao<Integer, Product> dao;
 
+
+
     public ProductServiceImpl(ProductDao<Integer, Product> dao) {
         this.dao = dao;
     }
