@@ -1,17 +1,16 @@
 package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
+import org.springframework.context.ApplicationContext;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.service.implementations.ProductServiceImpl;
 import ru.clevertec.console.service.interfaces.ProductService;
+import ru.clevertec.console.utils.ContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -20,8 +19,14 @@ import java.util.List;
 @WebServlet("/products")
 public class ProductsServlet extends HttpServlet {
 
-    private static final ProductService<Integer, Product> SERVICE = new ProductServiceImpl(new ProductDaoImpl());
     private final Gson gson = new Gson();
+    private ProductService<Integer, Product> service;
+
+    @Override
+    public void init() {
+        ApplicationContext instance = ContextUtil.getInstance();
+        service = instance.getBean("productServiceImpl", ProductService.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -31,12 +36,11 @@ public class ProductsServlet extends HttpServlet {
         try {
             List<Product> products;
             if (size != null && page != null) {
-                products = SERVICE.findAll(Integer.parseInt(size), Integer.parseInt(page));
+                products = service.findAll(Integer.parseInt(size), Integer.parseInt(page));
             } else {
-                products = SERVICE.findAll(5, 1);
+                products = service.findAll(5, 1);
             }
             json = gson.toJson(products);
-            resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();
             writer.write(json);
         } catch (SQLException e) {

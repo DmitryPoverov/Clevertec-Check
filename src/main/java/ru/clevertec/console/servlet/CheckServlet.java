@@ -1,13 +1,10 @@
 package ru.clevertec.console.servlet;
 
 import com.google.gson.GsonBuilder;
-import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
+import org.springframework.context.ApplicationContext;
 import ru.clevertec.console.entities.Check;
-import ru.clevertec.console.service.implementations.CheckServiceImpl;
-import ru.clevertec.console.service.implementations.DiscountCardServiceImpl;
-import ru.clevertec.console.service.implementations.ProductServiceImpl;
 import ru.clevertec.console.service.interfaces.CheckService;
+import ru.clevertec.console.utils.ContextUtil;
 import ru.clevertec.console.utils.PrintUtil;
 import ru.clevertec.console.utils.ServletUtil;
 
@@ -23,9 +20,13 @@ import java.util.List;
 @SuppressWarnings("Duplicates")
 public class CheckServlet extends HttpServlet {
 
-    private final CheckService<String , Check> service = new CheckServiceImpl(
-            new DiscountCardServiceImpl(new DiscountCardDaoImpl()),
-            new ProductServiceImpl(new ProductDaoImpl()));
+    private CheckService<String , Check> service;
+
+    @Override
+    public void init() {
+        ApplicationContext instance = ContextUtil.getInstance();
+        service = instance.getBean("checkServiceImpl", CheckService.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -35,7 +36,6 @@ public class CheckServlet extends HttpServlet {
 
         PrintUtil.printToPDF(stringsToPrint);
 
-        resp.setContentType("application/json");
         try (PrintWriter writer = resp.getWriter()) {
             String s = new GsonBuilder().setPrettyPrinting().create().toJson(stringsToPrint);
             writer.write(s);
@@ -51,7 +51,6 @@ public class CheckServlet extends HttpServlet {
 
         PrintUtil.printToPDF(stringsToPrint);
 
-        resp.setContentType("application/json");
         try (PrintWriter writer = resp.getWriter()) {
             String s = new GsonBuilder().setPrettyPrinting().create().toJson(stringsToPrint);
             writer.write(s);

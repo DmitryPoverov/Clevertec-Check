@@ -21,7 +21,7 @@ public class CheckRunner {
     public static void main(String[] args) throws IOException {
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        CheckService<String, Check> checkServiceBean = context.getBean(CheckService.class);
+        CheckService<String, Check> checkServiceBean = context.getBean("checkServiceImpl", CheckService.class);
 
         if (args[0].equals("--f")) {                                        // for 1.txt {13-1, 8-3, 9-4, ...}
             String path = args[1];

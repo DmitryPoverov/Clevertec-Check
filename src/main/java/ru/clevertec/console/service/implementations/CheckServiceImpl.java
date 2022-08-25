@@ -20,11 +20,10 @@ import java.util.Map;
 @Component
 public class CheckServiceImpl implements CheckService<String, Check> {
 
-    @Autowired
     private final DiscountCardService<Integer, DiscountCard> discountCardService;
-    @Autowired
     private final ProductService<Integer, Product> productService;
 
+    @Autowired
     public CheckServiceImpl(DiscountCardService<Integer, DiscountCard> discountCardService, ProductService<Integer, Product> productService) {
         this.discountCardService = discountCardService;
         this.productService = productService;

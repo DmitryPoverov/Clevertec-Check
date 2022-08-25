@@ -1,10 +1,10 @@
 package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
+import org.springframework.context.ApplicationContext;
 import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.service.implementations.ProductServiceImpl;
 import ru.clevertec.console.service.interfaces.ProductService;
+import ru.clevertec.console.utils.ContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,15 +20,21 @@ import java.util.Optional;
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
 
-    private static final ProductService<Integer, Product> SERVICE = new ProductServiceImpl(new ProductDaoImpl());
     private final Gson gson = new Gson();
+    private ProductService<Integer, Product> service;
+
+    @Override
+    public void init() {
+        ApplicationContext instance = ContextUtil.getInstance();
+        service = instance.getBean("productServiceImpl", ProductService.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String json = "";
         try {
             int id = Integer.parseInt(req.getParameter("id"));
-            Optional<Product> maybeProduct = SERVICE.findById(id);
+            Optional<Product> maybeProduct = service.findById(id);
             if (maybeProduct.isPresent()) {
                 Product product = maybeProduct.get();
                 json = gson.toJson(product);

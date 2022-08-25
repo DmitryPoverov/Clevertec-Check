@@ -1,17 +1,16 @@
 package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
-import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
+import org.springframework.context.ApplicationContext;
 import ru.clevertec.console.entities.DiscountCard;
-import ru.clevertec.console.service.implementations.DiscountCardServiceImpl;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
+import ru.clevertec.console.utils.ContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -20,8 +19,14 @@ import java.util.Optional;
 @WebServlet("/cards/*")
 public class CardServlet extends HttpServlet {
 
-    private final DiscountCardService<Integer, DiscountCard> service = new DiscountCardServiceImpl(new DiscountCardDaoImpl());
     private final Gson gson = new Gson();
+    private DiscountCardService<Integer, DiscountCard> service;
+
+    @Override
+    public void init() {
+        ApplicationContext instance = ContextUtil.getInstance();
+        service = instance.getBean("discountCardServiceImpl", DiscountCardService.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -33,7 +38,6 @@ public class CardServlet extends HttpServlet {
                 DiscountCard card = maybeCard.get();
                 json = gson.toJson(card);
             }
-            resp.setContentType(MediaType.APPLICATION_JSON);
             PrintWriter writer = resp.getWriter();
             writer.write(json);
         } catch (SQLException e) {

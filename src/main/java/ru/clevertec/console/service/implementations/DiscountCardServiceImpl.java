@@ -13,9 +13,9 @@ import java.util.Optional;
 @Component
 public class DiscountCardServiceImpl implements DiscountCardService<Integer, DiscountCard> {
 
-    @Autowired
-    private DiscountCardDao<Integer, DiscountCard> dao;
+    private final DiscountCardDao<Integer, DiscountCard> dao;
 
+    @Autowired
     public DiscountCardServiceImpl(DiscountCardDao<Integer, DiscountCard> dao) {
         this.dao = dao;
     }
