@@ -1,6 +1,6 @@
 package ru.clevertec.console.service.implementations;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 import ru.clevertec.console.entities.DiscountCard;
@@ -11,14 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class DiscountCardServiceImpl implements DiscountCardService<Integer, DiscountCard> {
 
     private final DiscountCardDao<Integer, DiscountCard> dao;
 
-    @Autowired
+/*    @Autowired
     public DiscountCardServiceImpl(DiscountCardDao<Integer, DiscountCard> dao) {
         this.dao = dao;
-    }
+    }*/
 
     @Override
     public List <DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {

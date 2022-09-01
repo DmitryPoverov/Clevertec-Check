@@ -1,6 +1,6 @@
 package ru.clevertec.console.service.implementations;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.entities.DiscountCard;
@@ -18,16 +18,17 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService<String, Check> {
 
     private final DiscountCardService<Integer, DiscountCard> discountCardService;
     private final ProductService<Integer, Product> productService;
 
-    @Autowired
+/*    @Autowired
     public CheckServiceImpl(DiscountCardService<Integer, DiscountCard> discountCardService, ProductService<Integer, Product> productService) {
         this.discountCardService = discountCardService;
         this.productService = productService;
-    }
+    }*/
 
     /* Creating a proxy object for my service class
     public CheckService<String, Check> getInstance() {

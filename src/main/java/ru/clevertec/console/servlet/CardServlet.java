@@ -2,9 +2,10 @@ package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.clevertec.console.config.AppConfig;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
-import ru.clevertec.console.utils.ContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +25,7 @@ public class CardServlet extends HttpServlet {
 
     @Override
     public void init() {
-        ApplicationContext instance = ContextUtil.getInstance();
+        ApplicationContext instance = new AnnotationConfigApplicationContext(AppConfig.class);
         service = instance.getBean("discountCardServiceImpl", DiscountCardService.class);
     }
 

@@ -2,9 +2,10 @@ package ru.clevertec.console.servlet;
 
 import com.google.gson.GsonBuilder;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.clevertec.console.config.AppConfig;
 import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.service.interfaces.CheckService;
-import ru.clevertec.console.utils.ContextUtil;
 import ru.clevertec.console.utils.PrintUtil;
 import ru.clevertec.console.utils.ServletUtil;
 
@@ -24,7 +25,7 @@ public class CheckServlet extends HttpServlet {
 
     @Override
     public void init() {
-        ApplicationContext instance = ContextUtil.getInstance();
+        ApplicationContext instance = new AnnotationConfigApplicationContext(AppConfig.class);
         service = instance.getBean("checkServiceImpl", CheckService.class);
     }
 

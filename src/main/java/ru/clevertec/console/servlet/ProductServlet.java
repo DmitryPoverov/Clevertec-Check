@@ -2,9 +2,10 @@ package ru.clevertec.console.servlet;
 
 import com.google.gson.Gson;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.clevertec.console.config.AppConfig;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.service.interfaces.ProductService;
-import ru.clevertec.console.utils.ContextUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,8 +26,8 @@ public class ProductServlet extends HttpServlet {
 
     @Override
     public void init() {
-        ApplicationContext instance = ContextUtil.getInstance();
-        service = instance.getBean("productServiceImpl", ProductService.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        service = context.getBean("productServiceImpl", ProductService.class);
     }
 
     @Override

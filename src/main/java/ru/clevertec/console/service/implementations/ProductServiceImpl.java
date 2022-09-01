@@ -1,6 +1,6 @@
 package ru.clevertec.console.service.implementations;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
 import ru.clevertec.console.entities.Product;
@@ -11,14 +11,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService<Integer, Product> {
 
-    private ProductDao<Integer, Product> dao;
+    private final ProductDao<Integer, Product> dao;
 
-    @Autowired
+/*    @Autowired
     public ProductServiceImpl(ProductDao<Integer, Product> dao) {
         this.dao = dao;
-    }
+    }*/
 
     @Override
     public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
