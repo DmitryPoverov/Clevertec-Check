@@ -24,12 +24,6 @@ public class CheckServiceImpl implements CheckService<String, Check> {
     private final DiscountCardService<Integer, DiscountCard> discountCardService;
     private final ProductService<Integer, Product> productService;
 
-/*    @Autowired
-    public CheckServiceImpl(DiscountCardService<Integer, DiscountCard> discountCardService, ProductService<Integer, Product> productService) {
-        this.discountCardService = discountCardService;
-        this.productService = productService;
-    }*/
-
     /* Creating a proxy object for my service class
     public CheckService<String, Check> getInstance() {
         CheckService<String, Check> tempCheckService = new CheckServiceImpl(

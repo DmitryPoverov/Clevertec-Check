@@ -16,11 +16,6 @@ public class ProductServiceImpl implements ProductService<Integer, Product> {
 
     private final ProductDao<Integer, Product> dao;
 
-/*    @Autowired
-    public ProductServiceImpl(ProductDao<Integer, Product> dao) {
-        this.dao = dao;
-    }*/
-
     @Override
     public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
         return dao.findAll(pageSize, pageNumber);

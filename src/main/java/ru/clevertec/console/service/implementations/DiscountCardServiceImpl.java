@@ -16,11 +16,6 @@ public class DiscountCardServiceImpl implements DiscountCardService<Integer, Dis
 
     private final DiscountCardDao<Integer, DiscountCard> dao;
 
-/*    @Autowired
-    public DiscountCardServiceImpl(DiscountCardDao<Integer, DiscountCard> dao) {
-        this.dao = dao;
-    }*/
-
     @Override
     public List <DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
         return dao.findAll(pageSize, pageNumber);

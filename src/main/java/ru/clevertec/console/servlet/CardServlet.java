@@ -25,8 +25,8 @@ public class CardServlet extends HttpServlet {
 
     @Override
     public void init() {
-        ApplicationContext instance = new AnnotationConfigApplicationContext(AppConfig.class);
-        service = instance.getBean("discountCardServiceImpl", DiscountCardService.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        service = context.getBean("discountCardServiceImpl", DiscountCardService.class);
     }
 
     @Override
