@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/cards")
 public class CardsServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private DiscountCardService<Integer, DiscountCard> service;
+    private DiscountCardService service;
 
     @Override
     public void init() {
@@ -32,23 +31,11 @@ public class CardsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String json;
-        String size = req.getParameter("size");
-        String page = req.getParameter("page");
-        try {
-            List<DiscountCard> cards;
-            if (size != null && page != null) {
-                cards = service.findAll(Integer.parseInt(size), Integer.parseInt(page));
-            } else {
-                cards = service.findAll(0, 0);
-            }
-            json = gson.toJson(cards);
-            resp.setContentType(MediaType.APPLICATION_JSON);
-            PrintWriter writer = resp.getWriter();
-            writer.write(json);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        List<DiscountCard> cards = service.findAll();
+        String json = gson.toJson(cards);
+        resp.setContentType(MediaType.APPLICATION_JSON);
+        PrintWriter writer = resp.getWriter();
+        writer.write(json);
     }
 
     @Override

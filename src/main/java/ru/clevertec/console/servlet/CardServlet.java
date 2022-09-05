@@ -14,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @WebServlet("/cards/*")
 public class CardServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private DiscountCardService<Integer, DiscountCard> service;
+    private DiscountCardService service;
 
     @Override
     public void init() {
@@ -32,18 +31,16 @@ public class CardServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String json = "";
-        try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Optional<DiscountCard> maybeCard = service.findById(id);
-            if (maybeCard.isPresent()) {
-                DiscountCard card = maybeCard.get();
-                json = gson.toJson(card);
-            }
-            PrintWriter writer = resp.getWriter();
-            writer.write(json);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+
+        long id = Long.parseLong(req.getParameter("id"));
+        Optional<DiscountCard> maybeCard = service.findById(id);
+        if (maybeCard.isPresent()) {
+            DiscountCard card = maybeCard.get();
+            json = gson.toJson(card);
         }
+        PrintWriter writer = resp.getWriter();
+        writer.write(json);
+
     }
 
     @Override

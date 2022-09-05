@@ -1,20 +1,21 @@
 package ru.clevertec.console.service.interfaces;
 
-import java.sql.SQLException;
+import ru.clevertec.console.entities.DiscountCard;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface DiscountCardService<K, T> {
+public interface DiscountCardService{
 
-    List<T> findAll(K pageSize, K pageNumber) throws SQLException;
+    List<DiscountCard> findAll();
 
-    Optional<T> findById(K id) throws SQLException;
+    Optional<DiscountCard> findById(long id) ;
 
-    Optional<T> findByName(String name) throws SQLException;
+    Optional<DiscountCard> findByNumber(String name) ;
 
-    boolean deleteById(K id) throws SQLException;
+    void deleteById(long id) ;
 
-    boolean update(T entity) throws SQLException;
+    void update(DiscountCard entity) ;
 
-    T save(T entity) throws SQLException;
+    DiscountCard save(DiscountCard entity) ;
 }

@@ -1,0 +1,36 @@
+db:
+  username: ${username.value:postgres}
+  password: postgres
+  driver: PostgresDriver
+  url: postgres:5432
+  host: localhost, 127.0.0.1
+  pool:
+    size: 12
+    timeout: 10
+    pools:
+      - size: 1
+        timeout: 1
+      - size: 2
+        timeout: 2
+      - size: 3
+        timeout: 3
+
+spring.profiles.active: qa
+
+logging:
+  level:
+    root: warn
+    by.poverov.spring2Data: INFO
+  file:
+    name: poverovLog.log
+    path: /
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    format-sql: true
+    show-sql: true
+    dialect: org.hibernate.dialect.PostgreSQL9Dialect

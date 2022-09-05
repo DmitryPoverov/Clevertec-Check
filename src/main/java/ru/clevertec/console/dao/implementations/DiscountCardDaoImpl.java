@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCard> {
+public class DiscountCardDaoImpl implements DiscountCardDao {
 
     private static final String FIND_ALL = """
             SELECT id, number
@@ -52,12 +52,12 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
             """;
 
     @Override
-    public List<DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
+    public List<DiscountCard> findAll(long pageSize, long pageNumber) throws SQLException {
 
         ArrayList<DiscountCard> resultCardList = new ArrayList<>();
-        int allRows = countAllRows();
+        long allRows = countAllRows();
         double maxPageNumber = 0.0;
-        int neededOffset;
+        long neededOffset;
 
         pageSize = PageValidator.checkAndReturnCardPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
@@ -69,12 +69,12 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
 
 
             if (PageValidator.isSizeAndNumberAndRowNumberValid(pageSize, pageNumber, allRows, maxPageNumber)) {
-                preparedStatement.setInt(1, pageSize);
-                preparedStatement.setInt(2, neededOffset);
+                preparedStatement.setLong(1, pageSize);
+                preparedStatement.setLong(2, neededOffset);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
                     resultCardList.add(DiscountCard.builder()
-                            .id(resultSet.getInt("id"))
+                            .id(resultSet.getLong("id"))
                             .number(resultSet.getString("number"))
                             .build());
                 }
@@ -86,23 +86,23 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     }
 
     @Override
-    public Integer countAllRows() throws SQLException {
+    public long countAllRows() throws SQLException {
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(COUNT_ROWS)) {
-            int rows = 0;
+            long rows = 0;
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                rows = resultSet.getInt(1);
+                rows = resultSet.getLong(1);
             }
             return rows;
         }
     }
 
     @Override
-    public Optional<DiscountCard> findById(Integer id) throws SQLException {
+    public Optional<DiscountCard> findById(long id) throws SQLException {
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             return handleCardResultSet(resultSet);
         }
@@ -122,9 +122,9 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     private Optional<DiscountCard> handleCardResultSet(ResultSet resultSet) throws SQLException {
         DiscountCard result = null;
         while (resultSet.next()) {
-            if (resultSet.getInt("id") != 0) {
+            if (resultSet.getLong("id") != 0) {
                 result = DiscountCard.builder().build();
-                result.setId(resultSet.getInt("id"));
+                result.setId(resultSet.getLong("id"));
                 result.setNumber(resultSet.getString("number"));
             }
         }
@@ -132,10 +132,10 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
     }
 
     @Override
-    public boolean deleteById(Integer id) throws SQLException {
+    public boolean deleteById(long id) throws SQLException {
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_ID)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             int result = preparedStatement.executeUpdate();
             return result == 1;
         }
@@ -146,7 +146,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
         try (ProxyConnection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement statement = connection.prepareStatement(UPDATE_ENTITY)) {
             statement.setString(1, entity.getNumber());
-            statement.setInt(2, entity.getId());
+            statement.setLong(2, entity.getId());
             int result = statement.executeUpdate();
             return result == 1;
         }
@@ -160,7 +160,7 @@ public class DiscountCardDaoImpl implements DiscountCardDao<Integer, DiscountCar
             statement.executeUpdate();
             ResultSet keys = statement.getGeneratedKeys();
             keys.next();
-            entity.setId(keys.getInt("id"));
+            entity.setId(keys.getLong("id"));
             return entity;
         }
     }

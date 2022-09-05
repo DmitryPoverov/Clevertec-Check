@@ -1,22 +1,24 @@
 package ru.clevertec.console.dao.daoInterface;
 
+import ru.clevertec.console.entities.DiscountCard;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface DiscountCardDao<K,T> {
+public interface DiscountCardDao {
 
-    List<T> findAll(K pageSize, K pageNumber) throws SQLException;
+    List<DiscountCard> findAll(long pageSize, long pageNumber) throws SQLException;
 
-    K countAllRows() throws SQLException;
+    long countAllRows() throws SQLException;
 
-    Optional<T> findById(K id) throws SQLException;
+    Optional<DiscountCard> findById(long id) throws SQLException;
 
-    Optional<T> findByName(String name) throws SQLException;
+    Optional<DiscountCard> findByName(String name) throws SQLException;
 
-    boolean deleteById(K id) throws SQLException;
+    boolean deleteById(long id) throws SQLException;
 
-    boolean update(T entity) throws SQLException;
+    boolean update(DiscountCard entity) throws SQLException;
 
-    T save(T entity) throws SQLException;
+    DiscountCard save(DiscountCard entity) throws SQLException;
 }

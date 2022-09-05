@@ -14,14 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet("/products")
 public class ProductsServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private ProductService<Integer, Product> service;
+    private ProductService service;
 
     @Override
     public void init() {
@@ -31,22 +30,10 @@ public class ProductsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String json;
-        String size = req.getParameter("size");
-        String page = req.getParameter("page");
-        try {
-            List<Product> products;
-            if (size != null && page != null) {
-                products = service.findAll(Integer.parseInt(size), Integer.parseInt(page));
-            } else {
-                products = service.findAll(5, 1);
-            }
-            json = gson.toJson(products);
-            PrintWriter writer = resp.getWriter();
-            writer.write(json);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        List<Product> products = service.findAll();
+        String json = gson.toJson(products);
+        PrintWriter writer = resp.getWriter();
+        writer.write(json);
     }
 
     @Override
