@@ -30,16 +30,17 @@ public class Product {
     private boolean discount;
 
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Double.compare(product.price, price) == 0 && Objects.equals(title, product.title);
+        return id == product.id && Double.compare(product.price, price) == 0 && Objects.equals(title, product.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, price);
+        return Objects.hash(id, title, price);
     }
 }

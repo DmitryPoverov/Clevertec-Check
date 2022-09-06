@@ -15,7 +15,7 @@ public interface DiscountCardService{
 
     void deleteById(long id) ;
 
-    void update(DiscountCard entity) ;
+    int update(DiscountCard entity) ;
 
     DiscountCard save(DiscountCard entity) ;
 }

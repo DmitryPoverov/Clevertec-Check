@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class CheckServiceImpl implements CheckService<String, Check> {
+public class CheckServiceImpl implements CheckService {
 
     private final DiscountCardService discountCardService;
     private final ProductService productService;
@@ -48,7 +48,6 @@ public class CheckServiceImpl implements CheckService<String, Check> {
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
                 tempList.add(temp);
             } else {
-
                 if ((c[0] != 0) && (('c' == c[0]) && discountCardService.findByNumber(temp).isPresent())) {
                     tempCard = arg.replace("card-", "");
                 } else {
@@ -80,10 +79,8 @@ public class CheckServiceImpl implements CheckService<String, Check> {
             id = product.getId();
             quantity = check.getCheckItemMap().get(product);
 
-
             if (productService.findById(id).isPresent() && productService.findById(id).get().isDiscount()) {
                 discountProductsCounter += quantity;
-
             }
         }
 

@@ -1,10 +1,9 @@
-package ru.clevertec.jdbc.dao.implementations;
+package ru.clevertec.console.dao.implementations;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
-import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
 import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -24,7 +23,7 @@ public class DiscountCardDaoImplTest {
             DiscountCard.builder().id(1).number("card-120").build(),
             DiscountCard.builder().id(2).number("card-121").build());
     private static final DiscountCard EXPECTED_CORRECT_CARD = DiscountCard.builder().id(2).number("card-121").build();
-    private static final DiscountCardDao<Integer, DiscountCard> DAO = new DiscountCardDaoImpl();
+    private static final DiscountCardDao DAO = new DiscountCardDaoImpl();
     private static final DiscountCard DISCOUNT_CARD = DiscountCard.builder().number("card-444").build();
     private static final int ZERO = 0;
     private static final int PAGE_NUMBER_FOR_FULL_LIST = 1;

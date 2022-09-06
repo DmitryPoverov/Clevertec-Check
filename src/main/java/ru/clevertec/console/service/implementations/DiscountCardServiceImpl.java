@@ -2,6 +2,7 @@ package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.repository.DiscountCardRepository;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
@@ -31,16 +32,19 @@ public class DiscountCardServiceImpl implements DiscountCardService {
     }
 
     @Override
+    @Transactional
     public void deleteById(long id) {
         repository.deleteById(id);
     }
 
     @Override
-    public void update(DiscountCard entity) {
-        repository.update(entity.getNumber(), entity.getId());
+    @Transactional
+    public int update(DiscountCard entity) {
+        return repository.update(entity.getNumber(), entity.getId());
     }
 
     @Override
+    @Transactional
     public DiscountCard save(DiscountCard entity) {
         return repository.save(entity);
     }
