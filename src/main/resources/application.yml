@@ -1,5 +1,5 @@
 db:
-  username: ${username.value:postgres}
+  username: postgres
   password: postgres
   driver: PostgresDriver
   url: postgres:5432
@@ -15,17 +15,20 @@ db:
       - size: 3
         timeout: 3
 
-spring.profiles.active: qa
+#spring.profiles.active: qa
 
 logging:
   level:
     root: warn
-    by.poverov.spring2Data: INFO
+    ru.clevertec.console: INFO
   file:
     name: poverovLog.log
     path: /
 
 spring:
+  profiles:
+    active: qa
+
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
@@ -34,3 +37,22 @@ spring:
     format-sql: true
     show-sql: true
     dialect: org.hibernate.dialect.PostgreSQL9Dialect
+
+  security:
+    user:
+      name: user-user
+      password: password1234
+
+server:
+  port: 8083
+
+info:
+  name: Spring Data Rest
+  description: This Spring Boot Rest Application is used for CRUD operations with Employees.
+  author: Dzmitry Paverau
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: beans, health, mapping, info

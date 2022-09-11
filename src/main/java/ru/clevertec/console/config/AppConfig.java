@@ -27,14 +27,19 @@ public class AppConfig {
 
     @Value("${db.url}")
     private String url;
+
     @Value("${db.driver}")
     private String driver;
+
     @Value("${db.user}")
     private String user;
+
     @Value("${db.password}")
     private String password;
+
     @Value("${hibernate.dialect}")
     private String dialect;
+
     @Value("${hibernate.format.sql}")
     private String formatSql;
 
@@ -48,18 +53,6 @@ public class AppConfig {
         dataSource.setPassword(password);
         return dataSource;
     }
-
-/* ???
-    @Bean
-    public LocalSessionFactoryBean sessionFactoryBean (DataSource dataSource) {
-        LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
-        sessionFactoryBean.setDataSource(dataSource);
-        sessionFactoryBean.setPackagesToScan("ru.clevertec.console..entity");
-        sessionFactoryBean.setHibernateProperties(new Properties() {{
-            put("hibernate.cfg.xml", true);
-        }});
-        return sessionFactoryBean;
-    }*/
 
     private Properties getJpaProperties() {
         Properties jpaProperties = new Properties();

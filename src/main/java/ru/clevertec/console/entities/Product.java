@@ -3,7 +3,6 @@ package ru.clevertec.console.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Builder
 @NoArgsConstructor
@@ -11,6 +10,7 @@ import java.util.Objects;
 @Setter
 @Getter
 @ToString
+@EqualsAndHashCode(of = {"id", "title"})
 @Entity
 @Table(name = "check_products")
 public class Product {
@@ -28,19 +28,4 @@ public class Product {
 
     @Column(name = "discount")
     private boolean discount;
-
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Product product = (Product) o;
-        return id == product.id && Double.compare(product.price, price) == 0 && Objects.equals(title, product.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, price);
-    }
 }

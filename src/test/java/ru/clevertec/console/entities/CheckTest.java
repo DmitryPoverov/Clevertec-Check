@@ -1,40 +1,26 @@
-package ru.clevertec.console;
+package ru.clevertec.console.entities;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import ru.clevertec.console.dao.implementations.DiscountCardDaoImpl;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
-import ru.clevertec.console.entities.Check;
-import ru.clevertec.console.entities.Product;
-import ru.clevertec.console.service.implementations.DiscountCardServiceImpl;
-import ru.clevertec.console.service.implementations.ProductServiceImpl;
-import ru.clevertec.console.service.interfaces.CheckService;
-import ru.clevertec.console.utils.CheckUtil;
-import ru.clevertec.console.service.implementations.CheckServiceImpl;
-import ru.clevertec.console.validators.RegexValidator;
-
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CheckTest {
+
+    /*private static final ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    private static final DiscountCardRepository repository = context.getBean(DiscountCardRepository.class);
+
+    private static final DiscountCardService cardService = new DiscountCardServiceImpl(repository);
+    private static final ProductService<Integer, Product> productService = new ProductServiceImpl(new ProductDaoImpl());
 
     private static final String DELIMITER = "";
     private static final String REGEX = ", ";
     private static final String PATH = "testTask/1.txt";
     private static final String EXPECTED_DISCOUNT_CARD = "123";
     private static final String[] ARGS = new String[]{"1-2", "2-2", "card-123"};
-    private static final CheckService<String, Check> SERVICE = new CheckServiceImpl(
-            new DiscountCardServiceImpl(new DiscountCardDaoImpl()),
-            new ProductServiceImpl(new ProductDaoImpl()));
+
+    private static final CheckService<String, Check> SERVICE = new CheckServiceImpl(cardService, productService);
+
     private static final Check EXPECTED_CHECK = SERVICE.getGoodsAndCard(ARGS);
+
     private static final Product PRODUCT1 = Product.builder().id(28).title("Apple").price(1.12).build();
     private static final Product PRODUCT2 = Product.builder().id(30).title("Watermelon").price(2.45).build();
     private static final Product PRODUCT3 = Product.builder().id(26).title("Cherry").price(3.18).build();
@@ -148,5 +134,5 @@ public class CheckTest {
         Map<Product, Integer> actualMap = CheckUtil
                 .checkProductsGetMapWriteInvalidToFile(EXPECTED_CONTENT, "testTask/invalidData.txt");
         Assertions.assertEquals(EXPECTED_MAP2, actualMap);
-    }
+    }*/
 }

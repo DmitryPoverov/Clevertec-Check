@@ -1,11 +1,10 @@
-package ru.clevertec.jdbc.dao.implementations;
+package ru.clevertec.console.dao.implementations;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.clevertec.console.dao.daoInterface.ProductDao;
-import ru.clevertec.console.dao.implementations.ProductDaoImpl;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.flywayClasses.FlywayCreator;
 
@@ -36,7 +35,7 @@ public class ProductDaoImplTest {
             Product.builder().id(1).title("Dress1_db").price(10.11).discount(false).build(),
             Product.builder().id(2).title("Pants1_db").price(10.22).discount(false).build(),
             Product.builder().id(3).title("Boots1_db").price(25.33).discount(true).build());
-    private static final ProductDao<Integer, Product> DAO = new ProductDaoImpl();
+    private static final ProductDao DAO = new ProductDaoImpl();
     private static final int CORRECT_ID = 1;
     private static final int ZERO = 0;
     private static final int ONE = 1;
