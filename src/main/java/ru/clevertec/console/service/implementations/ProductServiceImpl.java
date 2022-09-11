@@ -2,6 +2,7 @@ package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.repository.ProductsRepository;
@@ -10,7 +11,7 @@ import ru.clevertec.console.service.interfaces.ProductService;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 

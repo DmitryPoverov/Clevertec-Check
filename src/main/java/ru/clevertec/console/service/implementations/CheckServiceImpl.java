@@ -1,21 +1,23 @@
 package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.service.interfaces.CheckService;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
 import ru.clevertec.console.service.interfaces.ProductService;
 import ru.clevertec.console.utils.CheckUtil;
+import ru.clevertec.console.utils.PrintUtil;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
 
@@ -39,7 +41,12 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
-    public Check getGoodsAndCard(String[] args) {
+    public File returnFile(String[] args) {
+        List<String> strings = handleArrayAndGetStrungList(args);
+        return PrintUtil.printToPDFAndReturn(strings);
+    }
+
+    private Check getGoodsAndCard(String[] args) {
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
@@ -59,8 +66,7 @@ public class CheckServiceImpl implements CheckService {
         return new Check(tempCard, productsAndQuantitiesMap);
     }
 
-    @Override
-    public List<String> createList(Check check) {
+    private List<String> createList(Check check) {
         long id;
         double price;
         int quantity;

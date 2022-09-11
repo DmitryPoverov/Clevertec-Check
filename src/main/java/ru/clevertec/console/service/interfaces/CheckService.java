@@ -1,14 +1,14 @@
 package ru.clevertec.console.service.interfaces;
 
+import org.springframework.core.io.FileSystemResource;
 import ru.clevertec.console.entities.Check;
 
+import java.io.File;
 import java.util.List;
 
 public interface CheckService {
 
     List<String> handleArrayAndGetStrungList(String[] args);
 
-    Check getGoodsAndCard(String[] args);
-
-    List<String> createList(Check check);
+    File returnFile(String[] args);
 }

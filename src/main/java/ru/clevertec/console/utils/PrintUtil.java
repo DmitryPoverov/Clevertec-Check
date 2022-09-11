@@ -6,10 +6,7 @@ import lombok.experimental.UtilityClass;
 import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.entities.Product;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -22,19 +19,35 @@ public class PrintUtil {
     public static void printToPDF(List<String> list) {
         Document document = new Document();
         try {
-            PdfWriter.getInstance(document, new FileOutputStream(FILE_PATH));
-            Font font = new Font();
-            Rectangle a5 = PageSize.A5;
-            font.setFamily("Courier");
-            document.setPageSize(a5);
-            document.open();
-            for (String s : list) {
-                document.add(new Paragraph(s, font));
-            }
+            iTextHandler(list, document);
         } catch (DocumentException | IOException e) {
             throw new RuntimeException(e);
         } finally {
             document.close();
+        }
+    }
+
+    public static File printToPDFAndReturn(List<String> list) {
+        Document document = new Document();
+        try {
+            iTextHandler(list, document);
+            return new File(FILE_PATH);
+        } catch (DocumentException | IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            document.close();
+        }
+    }
+
+    private static void iTextHandler(List<String> list, Document document) throws DocumentException, FileNotFoundException {
+        PdfWriter.getInstance(document, new FileOutputStream(FILE_PATH));
+        Font font = new Font();
+        Rectangle a5 = PageSize.A5;
+        font.setFamily("Courier");
+        document.setPageSize(a5);
+        document.open();
+        for (String s : list) {
+            document.add(new Paragraph(s, font));
         }
     }
 
