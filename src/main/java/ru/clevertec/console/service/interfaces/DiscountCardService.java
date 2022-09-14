@@ -11,7 +11,7 @@ public interface DiscountCardService{
 
     Optional<DiscountCard> findById(long id) ;
 
-    Optional<DiscountCard> findByNumber(String name) ;
+    Optional<DiscountCard> findByNumber(String number) ;
 
     void deleteById(long id) ;
 
