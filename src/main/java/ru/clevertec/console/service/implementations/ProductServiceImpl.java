@@ -39,13 +39,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public void update(Product entity) {
-        repository.update(entity.getTitle(), entity.getPrice(), entity.isDiscount(), entity.getId());
+    public int update(Product product) {
+        return repository.update(product.getTitle(), product.getPrice(), product.isDiscount(), product.getId());
     }
 
     @Override
     @Transactional
-    public Product save(Product entity) {
-        return repository.save(entity);
+    public Product save(Product product) {
+        return repository.save(product);
     }
 }

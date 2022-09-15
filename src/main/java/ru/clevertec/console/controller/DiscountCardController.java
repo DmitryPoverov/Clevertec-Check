@@ -19,7 +19,7 @@ public class DiscountCardController {
         return discountCardService.findAll();
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/{id}")
     public DiscountCard getDiscountCardById(@PathVariable long id) {
         return discountCardService.findById(id).orElse(new DiscountCard());
     }
