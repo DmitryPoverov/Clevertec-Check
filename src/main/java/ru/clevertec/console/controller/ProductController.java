@@ -8,7 +8,7 @@ import ru.clevertec.console.service.interfaces.ProductService;
 import java.util.List;
 
 @RestController
-@RequestMapping("products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -35,8 +35,8 @@ public class ProductController {
     }
 
     @PutMapping("")
-    public Product updateProduct(Product product) {
-        return productService.save(product);
+    public Product updateProduct(@RequestBody Product product) {
+        return productService.update(product);
     }
 
     @DeleteMapping("/{id}")

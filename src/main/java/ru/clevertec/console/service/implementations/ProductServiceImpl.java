@@ -39,8 +39,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public int update(Product product) {
-        return repository.update(product.getTitle(), product.getPrice(), product.isDiscount(), product.getId());
+    public Product update(Product product) {
+        Product updatedProduct = null;
+        int update = repository.update(product.getTitle(), product.getPrice(), product.isDiscount(), product.getId());
+        if (update == 1) {
+            if (repository.findById(product.getId()).isPresent()) {
+                updatedProduct = repository.findById(product.getId()).get();
+            }
+        }
+        return updatedProduct;
     }
 
     @Override
