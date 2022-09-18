@@ -1,21 +1,21 @@
 package ru.clevertec.console.service.interfaces;
 
-import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.dto.ProductDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ProductService {
 
-    List<Product> findAll();
+    List<ProductDto> findAll();
 
-    Optional<Product> findById(long id);
+    Optional<ProductDto> findById(long id);
 
-    Optional<Product> findByName(String name);
+    Optional<ProductDto> findByName(String name);
 
     void deleteById(long id);
 
-    Product update(Product product);
+    ProductDto update(ProductDto product);
 
-    Product save(Product product);
+    ProductDto save(ProductDto product);
 }

@@ -1,8 +1,5 @@
 package ru.clevertec.console.service.interfaces;
 
-import org.springframework.core.io.FileSystemResource;
-import ru.clevertec.console.entities.Check;
-
 import java.io.File;
 import java.util.List;
 

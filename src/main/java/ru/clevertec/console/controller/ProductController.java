@@ -2,7 +2,7 @@ package ru.clevertec.console.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.dto.ProductDto;
 import ru.clevertec.console.service.interfaces.ProductService;
 
 import java.util.List;
@@ -15,27 +15,27 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductDto> getAllProducts() {
         return productService.findAll();
     }
 
-    @GetMapping("/id/{id}")
-    public Product getProductById(@PathVariable long id) {
-        return productService.findById(id).orElse(new Product());
+    @GetMapping("/{id}")
+    public ProductDto getProductById(@PathVariable long id) {
+        return productService.findById(id).orElse(new ProductDto());
     }
 
     @GetMapping("/name/{name}")
-    public Product getProductByName(@PathVariable String name) {
-        return productService.findByName(name).orElse(new Product());
+    public ProductDto getProductByName(@PathVariable String name) {
+        return productService.findByName(name).orElse(new ProductDto());
     }
 
     @PostMapping("")
-    public Product saveProduct(@RequestBody Product product) {
+    public ProductDto saveProduct(@RequestBody ProductDto product) {
         return productService.save(product);
     }
 
     @PutMapping("")
-    public Product updateProduct(@RequestBody Product product) {
+    public ProductDto updateProduct(@RequestBody ProductDto product) {
         return productService.update(product);
     }
 

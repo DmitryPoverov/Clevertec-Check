@@ -2,7 +2,7 @@ package ru.clevertec.console.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.dto.DiscountCardDto;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
 
 import java.util.List;
@@ -15,27 +15,27 @@ public class DiscountCardController {
     private final DiscountCardService discountCardService;
 
     @GetMapping
-    public List<DiscountCard> getAllDiscountCards() {
+    public List<DiscountCardDto> getAllDiscountCards() {
         return discountCardService.findAll();
     }
 
     @GetMapping("/{id}")
-    public DiscountCard getDiscountCardById(@PathVariable long id) {
-        return discountCardService.findById(id).orElse(new DiscountCard());
+    public DiscountCardDto getDiscountCardById(@PathVariable long id) {
+        return discountCardService.findById(id).orElse(new DiscountCardDto());
     }
 
     @GetMapping("/number/{number}")
-    public DiscountCard getDiscountCardByNumber(@PathVariable String number) {
-        return discountCardService.findByNumber(number).orElse(new DiscountCard());
+    public DiscountCardDto getDiscountCardByNumber(@PathVariable String number) {
+        return discountCardService.findByNumber(number).orElse(new DiscountCardDto());
     }
 
     @PostMapping("")
-    public DiscountCard addNewDiscountCard(@RequestBody DiscountCard employee) {
+    public DiscountCardDto addNewDiscountCard(@RequestBody DiscountCardDto employee) {
         return discountCardService.save(employee);
     }
 
     @PutMapping("")
-    public DiscountCard updateDiscountCard(@RequestBody DiscountCard employee) {
+    public DiscountCardDto updateDiscountCard(@RequestBody DiscountCardDto employee) {
         return discountCardService.save(employee);
     }
 
