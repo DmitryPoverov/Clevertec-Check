@@ -1,8 +1,7 @@
-package ru.clevertec.console;
+package ru.clevertec.console.enums;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.clevertec.console.enums.Products;
 import ru.clevertec.console.exception.WrongIdException;
 
 public class ProductsTest {

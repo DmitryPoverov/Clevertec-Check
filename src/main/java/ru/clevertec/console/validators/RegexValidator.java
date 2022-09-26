@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 public class RegexValidator {
 
     public static boolean isValid(String productString) {
-        String regex = "^(100|[1-9]\\d?);([A-Z][a-z]{2,29}|[¿-ﬂ®][‡-ˇ∏]{2,29});(100\\.00|[1-9]\\d?\\.\\d{2});(20|1\\d|[1-9])$";
+        String regex = "^(100|[1-9]\\d?);([A-Z][a-z]{2,29}|[–ê-–Ø–Å][–∞-—è—ë]{2,29});(100\\.00|[1-9]\\d?\\.\\d{2});(20|1\\d|[1-9])$";
         return productString.matches(regex);
     }
 }

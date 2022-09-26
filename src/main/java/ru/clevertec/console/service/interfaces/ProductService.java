@@ -1,20 +1,21 @@
 package ru.clevertec.console.service.interfaces;
 
-import java.sql.SQLException;
+import ru.clevertec.console.entities.Product;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductService<K, T> {
+public interface ProductService {
 
-    List<T> findAll(K pageSize, K pageNumber) throws SQLException;
+    List<Product> findAll();
 
-    Optional<T> findById(K id) throws SQLException;
+    Optional<Product> findById(long id);
 
-    Optional<T> findByName(String name) throws SQLException;
+    Optional<Product> findByName(String name);
 
-    boolean deleteById(K id) throws SQLException;
+    void deleteById(long id);
 
-    boolean update(T entity) throws SQLException;
+    void update(Product entity);
 
-    T save(T entity) throws SQLException;
+    Product save(Product entity);
 }

@@ -16,9 +16,9 @@ import java.util.Arrays;
 public class ServiceHandler implements InvocationHandler {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private final CheckService<String, Check> checkService;
+    private final CheckService checkService;
 
-    public ServiceHandler(CheckService<String, Check> checkService) {
+    public ServiceHandler(CheckService checkService) {
         this.checkService = checkService;
     }
 

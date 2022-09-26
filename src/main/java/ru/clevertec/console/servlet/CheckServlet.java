@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.clevertec.console.config.AppConfig;
-import ru.clevertec.console.entities.Check;
 import ru.clevertec.console.service.interfaces.CheckService;
 import ru.clevertec.console.utils.PrintUtil;
 import ru.clevertec.console.utils.ServletUtil;
@@ -21,7 +20,7 @@ import java.util.List;
 @SuppressWarnings("Duplicates")
 public class CheckServlet extends HttpServlet {
 
-    private CheckService<String , Check> service;
+    private CheckService service;
 
     @Override
     public void init() {

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ProductDaoImpl implements ProductDao<Integer, Product> {
+public class ProductDaoImpl implements ProductDao {
 
     private static final String FIND_ALL = """
             SELECT id, title, price, discount
@@ -52,12 +52,12 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             """;
 
     @Override
-    public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
+    public List<Product> findAll(long pageSize, long pageNumber) throws SQLException {
 
         ArrayList<Product> resultProductList = new ArrayList<>();
-        int allRows = countAllRows();
+        long allRows = countAllRows();
         double maxPageNumber = 0.0;
-        int neededOffset;
+        long neededOffset;
 
         pageSize = PageValidator.checkAndReturnProductPageSize(pageSize);
         pageNumber = PageValidator.checkAndReturnPageNumber(pageNumber);
@@ -68,12 +68,12 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
              PreparedStatement statement = connection.prepareStatement(FIND_ALL)) {
 
             if (PageValidator.isSizeAndNumberAndRowNumberValid(pageSize, pageNumber, allRows, maxPageNumber)) {
-                statement.setInt(1, pageSize);
-                statement.setInt(2, neededOffset);
+                statement.setLong(1, pageSize);
+                statement.setLong(2, neededOffset);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
                     resultProductList.add(Product.builder()
-                            .id(resultSet.getInt("id"))
+                            .id(resultSet.getLong("id"))
                             .title(resultSet.getString("title"))
                             .price(resultSet.getDouble("price"))
                             .discount(resultSet.getBoolean("discount")).build());
@@ -86,10 +86,10 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
     }
 
     @Override
-    public Optional<Product> findById(Integer id) throws SQLException {
+    public Optional<Product> findById(long id) throws SQLException {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             Product product = handleProductResultSet(resultSet);
             return Optional.ofNullable(product);
@@ -108,8 +108,8 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
     }
 
     @Override
-    public Integer countAllRows() throws SQLException {
-        int rows = 0;
+    public long countAllRows() throws SQLException {
+        long rows = 0;
         try (Connection connection = new ProxyConnection(ConnectionManager.getConnection());
              PreparedStatement preparedStatement = connection.prepareStatement(COUNT_ROWS)) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -123,9 +123,9 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
     private Product handleProductResultSet(ResultSet resultSet) throws SQLException {
         Product result = null;
         while (resultSet.next()) {
-            if (resultSet.getInt("id") != 0) {
+            if (resultSet.getLong("id") != 0) {
                 result = Product.builder()
-                        .id(resultSet.getInt("id"))
+                        .id(resultSet.getLong("id"))
                         .title(resultSet.getString("title"))
                         .price(resultSet.getDouble("price"))
                         .discount(resultSet.getBoolean("discount")).build();
@@ -144,7 +144,7 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             statement.executeUpdate();
             ResultSet resultSet = statement.getGeneratedKeys();
             while (resultSet.next()) {
-                entity.setId(resultSet.getInt("id"));
+                entity.setId(resultSet.getLong("id"));
             }
         }
         return entity;
@@ -157,16 +157,16 @@ public class ProductDaoImpl implements ProductDao<Integer, Product> {
             statement.setString(1, entity.getTitle());
             statement.setDouble(2, entity.getPrice());
             statement.setBoolean(3, entity.isDiscount());
-            statement.setInt(4, entity.getId());
+            statement.setLong(4, entity.getId());
             return statement.executeUpdate() == 1;
         }
     }
 
     @Override
-    public boolean deleteById(Integer id) throws SQLException {
+    public boolean deleteById(long id) throws SQLException {
         try (Connection connection = ConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             return statement.executeUpdate() == 1;
         }
     }

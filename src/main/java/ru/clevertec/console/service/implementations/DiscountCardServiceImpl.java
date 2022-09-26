@@ -2,47 +2,50 @@ package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
+import org.springframework.transaction.annotation.Transactional;
 import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.repository.DiscountCardRepository;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
-public class DiscountCardServiceImpl implements DiscountCardService<Integer, DiscountCard> {
+public class DiscountCardServiceImpl implements DiscountCardService {
 
-    private final DiscountCardDao<Integer, DiscountCard> dao;
+    private final DiscountCardRepository repository;
 
     @Override
-    public List <DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
-        return dao.findAll(pageSize, pageNumber);
+    public List <DiscountCard> findAll() {
+        return repository.findAll();
     }
 
     @Override
-    public Optional<DiscountCard> findById(Integer id) throws SQLException {
-        return dao.findById(id);
+    public Optional<DiscountCard> findById(long id) {
+        return repository.findById(id);
     }
 
     @Override
-    public Optional<DiscountCard> findByName(String name) throws SQLException {
-        return dao.findByName(name);
+    public Optional<DiscountCard> findByNumber(String number) {
+        return Optional.ofNullable(repository.findByNumber(number));
     }
 
     @Override
-    public boolean deleteById(Integer id) throws SQLException {
-        return dao.deleteById(id);
+    @Transactional
+    public void deleteById(long id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public boolean update(DiscountCard entity) throws SQLException {
-        return dao.update(entity);
+    @Transactional
+    public int update(DiscountCard entity) {
+        return repository.update(entity.getNumber(), entity.getId());
     }
 
     @Override
-    public DiscountCard save(DiscountCard entity) throws SQLException {
-        return dao.save(entity);
+    @Transactional
+    public DiscountCard save(DiscountCard entity) {
+        return repository.save(entity);
     }
 }

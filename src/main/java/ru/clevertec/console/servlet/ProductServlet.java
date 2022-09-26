@@ -15,14 +15,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @WebServlet("/products/*")
 public class ProductServlet extends HttpServlet {
 
     private final Gson gson = new Gson();
-    private ProductService<Integer, Product> service;
+    private ProductService service;
 
     @Override
     public void init() {
@@ -33,20 +32,17 @@ public class ProductServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String json = "";
-        try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            Optional<Product> maybeProduct = service.findById(id);
-            if (maybeProduct.isPresent()) {
-                Product product = maybeProduct.get();
-                json = gson.toJson(product);
-            }
-            resp.setContentType(MediaType.APPLICATION_JSON);
-            PrintWriter writer = resp.getWriter();
-            writer.write(json);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        long id = Long.parseLong(req.getParameter("id"));
+        Optional<Product> maybeProduct = service.findById(id);
+        if (maybeProduct.isPresent()) {
+            Product product = maybeProduct.get();
+            json = gson.toJson(product);
         }
+        resp.setContentType(MediaType.APPLICATION_JSON);
+        PrintWriter writer = resp.getWriter();
+        writer.write(json);
     }
+
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

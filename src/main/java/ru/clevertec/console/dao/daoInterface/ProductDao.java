@@ -1,22 +1,24 @@
 package ru.clevertec.console.dao.daoInterface;
 
+import ru.clevertec.console.entities.Product;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductDao<K,T> {
+public interface ProductDao {
 
-    List<T> findAll(K pageSize, K pageNumber) throws SQLException;
+    List<Product> findAll(long pageSize, long pageNumber) throws SQLException;
 
-    K countAllRows() throws SQLException;
+    long countAllRows() throws SQLException;
 
-    Optional<T> findById(K id) throws SQLException;
+    Optional<Product> findById(long id) throws SQLException;
 
-    Optional<T> findByName(String name) throws SQLException;
+    Optional<Product> findByName(String name) throws SQLException;
 
-    boolean deleteById(K id) throws SQLException;
+    boolean deleteById(long id) throws SQLException;
 
-    boolean update(T entity) throws SQLException;
+    boolean update(Product entity) throws SQLException;
 
-    T save(T entity) throws SQLException;
+    Product save(Product entity) throws SQLException;
 }

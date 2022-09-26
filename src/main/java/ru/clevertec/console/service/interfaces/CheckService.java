@@ -1,12 +1,14 @@
 package ru.clevertec.console.service.interfaces;
 
+import ru.clevertec.console.entities.Check;
+
 import java.util.List;
 
-public interface CheckService<K, T> {
+public interface CheckService {
 
-    List<K> handleArrayAndGetStrungList(K[] args);
+    List<String> handleArrayAndGetStrungList(String[] args);
 
-    T getGoodsAndCard(K[] args);
+    Check getGoodsAndCard(String[] args);
 
-    List<K> createList(T check);
+    List<String> createList(Check check);
 }

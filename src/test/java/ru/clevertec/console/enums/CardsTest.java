@@ -1,4 +1,4 @@
-package ru.clevertec.console;
+package ru.clevertec.console.enums;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestInstance;
