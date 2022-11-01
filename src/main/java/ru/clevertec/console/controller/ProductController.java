@@ -21,20 +21,22 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ProductDto getProductById(@PathVariable long id) {
-        return productService.findById(id).orElse(new ProductDto());
+        return productService.findById(id)
+                .orElse(new ProductDto());
     }
 
     @GetMapping("/name/{name}")
     public ProductDto getProductByName(@PathVariable String name) {
-        return productService.findByName(name).orElse(new ProductDto());
+        return productService.findByName(name)
+                .orElse(new ProductDto());
     }
 
-    @PostMapping("")
+    @PostMapping
     public ProductDto saveProduct(@RequestBody ProductDto product) {
         return productService.save(product);
     }
 
-    @PutMapping("")
+    @PutMapping
     public ProductDto updateProduct(@RequestBody ProductDto product) {
         return productService.update(product);
     }

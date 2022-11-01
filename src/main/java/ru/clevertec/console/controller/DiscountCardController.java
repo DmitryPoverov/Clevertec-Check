@@ -29,12 +29,12 @@ public class DiscountCardController {
         return discountCardService.findByNumber(number).orElse(new DiscountCardDto());
     }
 
-    @PostMapping("")
+    @PostMapping
     public DiscountCardDto addNewDiscountCard(@RequestBody DiscountCardDto employee) {
         return discountCardService.save(employee);
     }
 
-    @PutMapping("")
+    @PutMapping
     public DiscountCardDto updateDiscountCard(@RequestBody DiscountCardDto employee) {
         return discountCardService.save(employee);
     }
