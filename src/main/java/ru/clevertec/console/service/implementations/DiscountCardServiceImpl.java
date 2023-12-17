@@ -1,48 +1,60 @@
 package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.clevertec.console.dao.daoInterface.DiscountCardDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.console.dto.DiscountCardDto;
 import ru.clevertec.console.entities.DiscountCard;
+import ru.clevertec.console.mapper.MapUtil;
+import ru.clevertec.console.repository.DiscountCardRepository;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class DiscountCardServiceImpl implements DiscountCardService<Integer, DiscountCard> {
+public class DiscountCardServiceImpl implements DiscountCardService {
 
-    private final DiscountCardDao<Integer, DiscountCard> dao;
+    private final DiscountCardRepository repository;
+    private final MapUtil mapUtil;
 
     @Override
-    public List <DiscountCard> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
-        return dao.findAll(pageSize, pageNumber);
+    public List <DiscountCardDto> findAll() {
+        return repository.findAll().stream()
+                .map(mapUtil::mapDiscountCardToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<DiscountCard> findById(Integer id) throws SQLException {
-        return dao.findById(id);
+    public Optional<DiscountCardDto> findById(long id) {
+        return repository.findById(id)
+                .map(mapUtil::mapDiscountCardToDto);
     }
 
     @Override
-    public Optional<DiscountCard> findByName(String name) throws SQLException {
-        return dao.findByName(name);
+    public Optional<DiscountCardDto> findByNumber(String number) {
+        return repository.findByNumber(number)
+                .map(mapUtil::mapDiscountCardToDto);
     }
 
     @Override
-    public boolean deleteById(Integer id) throws SQLException {
-        return dao.deleteById(id);
+    @Transactional
+    public void deleteById(long id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public boolean update(DiscountCard entity) throws SQLException {
-        return dao.update(entity);
+    @Transactional
+    public int update(DiscountCardDto entity) {
+        return repository.update(entity.getNumber(), entity.getId());
     }
 
     @Override
-    public DiscountCard save(DiscountCard entity) throws SQLException {
-        return dao.save(entity);
+    @Transactional
+    public DiscountCardDto save(DiscountCardDto dto) {
+        DiscountCard discountCard = mapUtil.mapDtoToDiscountCard(dto);
+        return mapUtil.mapDiscountCardToDto(repository.save(discountCard));
     }
 }

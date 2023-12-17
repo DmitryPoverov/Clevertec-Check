@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class DaoUtil {
 
-    public static int getNeededOffset(Integer pageSize, Integer pageNumber) {
+    public static long getNeededOffset(long pageSize, long pageNumber) {
         return pageSize * pageNumber - pageSize;
     }
 }

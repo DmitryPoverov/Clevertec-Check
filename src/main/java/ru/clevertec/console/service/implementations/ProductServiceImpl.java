@@ -1,48 +1,68 @@
 package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-import ru.clevertec.console.dao.daoInterface.ProductDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.clevertec.console.dto.ProductDto;
 import ru.clevertec.console.entities.Product;
+import ru.clevertec.console.mapper.MapUtil;
+import ru.clevertec.console.repository.ProductsRepository;
 import ru.clevertec.console.service.interfaces.ProductService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService<Integer, Product> {
+public class ProductServiceImpl implements ProductService {
 
-    private final ProductDao<Integer, Product> dao;
+    private final ProductsRepository repository;
+    private final MapUtil mapUtil;
 
     @Override
-    public List<Product> findAll(Integer pageSize, Integer pageNumber) throws SQLException {
-        return dao.findAll(pageSize, pageNumber);
+    public List<ProductDto> findAll() {
+        return repository.findAll()
+                .stream()
+                .map(mapUtil::mapProductToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Product> findById(Integer id) throws SQLException {
-        return dao.findById(id);
+    public Optional<ProductDto> findById(long id) {
+        return repository.findById(id)
+                .map(mapUtil::mapProductToDto);
     }
 
     @Override
-    public Optional<Product> findByName(String name) throws SQLException {
-        return dao.findByName(name);
+    public Optional<ProductDto> findByName(String name) {
+        return repository.findByTitle(name)
+                .map(mapUtil::mapProductToDto);
     }
 
     @Override
-    public boolean deleteById(Integer id) throws SQLException {
-        return dao.deleteById(id);
+    @Transactional
+    public void deleteById(long id) {
+        repository.deleteById(id);
     }
 
     @Override
-    public boolean update(Product entity) throws SQLException {
-        return dao.update(entity);
+    @Transactional
+    public ProductDto update(ProductDto dto) {
+        ProductDto updatedProduct = null;
+        int update = repository.update(dto.getTitle(), dto.getPrice(), dto.isDiscount(), dto.getId());
+        if (update == 1) {
+            if (repository.findById(dto.getId()).isPresent()) {
+                updatedProduct = mapUtil.mapProductToDto(repository.findById(dto.getId()).get());
+            }
+        }
+        return updatedProduct;
     }
 
     @Override
-    public Product save(Product entity) throws SQLException {
-        return dao.save(entity);
+    @Transactional
+    public ProductDto save(ProductDto dto) {
+        Product product = mapUtil.mapDtoToProduct(dto);
+        return mapUtil.mapProductToDto(repository.save(product));
     }
 }

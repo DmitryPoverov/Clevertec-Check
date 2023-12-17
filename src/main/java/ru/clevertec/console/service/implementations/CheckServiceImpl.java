@@ -1,28 +1,28 @@
 package ru.clevertec.console.service.implementations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.clevertec.console.entities.Check;
-import ru.clevertec.console.entities.DiscountCard;
 import ru.clevertec.console.entities.Product;
 import ru.clevertec.console.service.interfaces.CheckService;
 import ru.clevertec.console.service.interfaces.DiscountCardService;
 import ru.clevertec.console.service.interfaces.ProductService;
 import ru.clevertec.console.utils.CheckUtil;
+import ru.clevertec.console.utils.PrintUtil;
 
-import java.sql.SQLException;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public class CheckServiceImpl implements CheckService<String, Check> {
+public class CheckServiceImpl implements CheckService {
 
-    private final DiscountCardService<Integer, DiscountCard> discountCardService;
-    private final ProductService<Integer, Product> productService;
+    private final DiscountCardService discountCardService;
+    private final ProductService productService;
 
     /* Creating a proxy object for my service class
     public CheckService<String, Check> getInstance() {
@@ -41,7 +41,12 @@ public class CheckServiceImpl implements CheckService<String, Check> {
     }
 
     @Override
-    public Check getGoodsAndCard(String[] args) {
+    public File returnFile(String[] args) {
+        List<String> strings = handleArrayAndGetStrungList(args);
+        return PrintUtil.printToPDFAndReturn(strings);
+    }
+
+    private Check getGoodsAndCard(String[] args) {
         List<String> tempList = new ArrayList<>();
         String tempCard = "";
         for (String arg : args) {
@@ -50,14 +55,10 @@ public class CheckServiceImpl implements CheckService<String, Check> {
             if ((c[0] != 0) && (c[0] >= 48 && c[0] <= 57)) {
                 tempList.add(temp);
             } else {
-                try {
-                    if ((c[0] != 0) && (('c' == c[0]) && discountCardService.findByName(temp).isPresent())) {
-                        tempCard = arg.replace("card-", "");
-                    } else {
-                        System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                if ((c[0] != 0) && (('c' == c[0]) && discountCardService.findByNumber(temp).isPresent())) {
+                    tempCard = arg.replace("card-", "");
+                } else {
+                    System.out.println("!!! It seems like you entered a wrong card number or wrong format card!!!");
                 }
             }
         }
@@ -65,9 +66,8 @@ public class CheckServiceImpl implements CheckService<String, Check> {
         return new Check(tempCard, productsAndQuantitiesMap);
     }
 
-    @Override
-    public List<String> createList(Check check) {
-        int id;
+    private List<String> createList(Check check) {
+        long id;
         double price;
         int quantity;
         String description;
@@ -85,12 +85,8 @@ public class CheckServiceImpl implements CheckService<String, Check> {
             id = product.getId();
             quantity = check.getCheckItemMap().get(product);
 
-            try {
-                if (productService.findById(id).isPresent() && productService.findById(id).get().isDiscount()) {
-                    discountProductsCounter += quantity;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            if (productService.findById(id).isPresent() && productService.findById(id).get().isDiscount()) {
+                discountProductsCounter += quantity;
             }
         }
 
@@ -105,31 +101,25 @@ public class CheckServiceImpl implements CheckService<String, Check> {
         for (Product checkItem : check.getCheckItemMap().keySet()) {
             fiveProductDiscount = 0;
             id = checkItem.getId();
-            try {
-                if (productService.findById(checkItem.getId()).isPresent()) {
-                    description = productService.findById(checkItem.getId()).get().getTitle();
-                    price = productService.findById(checkItem.getId()).get().getPrice();
-                    quantity = check.getCheckItemMap().get(checkItem);
-                    if (discountProductsCounter > 5) {
-                        fiveProductDiscount = 0.2;
-                    }
-                    if (productService.findById(id).isPresent() && productService.findById(id).get().isDiscount()) {
-                        double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
-                        fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
-                        total = price * quantity - fiveProductsCurrentDiscount;
-                    } else {
-                        total = price * quantity;
-                    }
-                    totalPrice += total;
 
-                    stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
+            if (productService.findById(checkItem.getId()).isPresent()) {
+                description = productService.findById(checkItem.getId()).get().getTitle();
+                price = productService.findById(checkItem.getId()).get().getPrice();
+                quantity = check.getCheckItemMap().get(checkItem);
+                if (discountProductsCounter > 5) {
+                    fiveProductDiscount = 0.2;
                 }
+                if (productService.findById(id).isPresent() && productService.findById(id).get().isDiscount()) {
+                    double fiveProductsCurrentDiscount = fiveProductDiscount * price * quantity;
+                    fiveProductsTotalDiscount += fiveProductsCurrentDiscount;
+                    total = price * quantity - fiveProductsCurrentDiscount;
+                } else {
+                    total = price * quantity;
+                }
+                totalPrice += total;
 
-
-            } catch (SQLException sqlException) {
-                sqlException.printStackTrace();
+                stringsToPrint.add(String.format("%2d  %-17s %7.2f  %6.2f", quantity, description, price, total));
             }
-
         }
         totalDiscount = totalPrice * discountCardDiscount;
         finalPrice = totalPrice - totalDiscount;

@@ -2,13 +2,24 @@ package ru.clevertec.console.entities;
 
 import lombok.*;
 
+import javax.persistence.*;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "number")
 @Setter
 @Getter
-@Builder
 @ToString
-@EqualsAndHashCode
+@Entity
+@Table(name = "check_discount_card")
 public class DiscountCard {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "number")
     private String number;
 }
